@@ -1,0 +1,148 @@
+#!/usr/bin/env node
+var fs      = require('fs'),
+    path    = require('path'),
+
+    selleck   = require('selleck'),
+    fileutils = require('selleck/fileutils'),
+    util      = require('selleck/util'), // selleck's util, not Node's util.
+
+    arg,
+    args     = [], // leftover args after params are parsed out of argv
+    argv     = process.argv.slice(2), // get rid of the leading 'node' arg
+    docPaths = [],
+    log      = selleck.log,
+
+    options  = {
+        out     : './docs',
+        template: selleck.defaultTemplate
+    },
+
+    templateLayouts,
+    templatePages,
+    templatePartials,
+
+    help = [
+        "Generates YUI user documentation, mustache-style.",
+        "",
+        "Usage: selleck [options] [path]",
+        "",
+        "Options:",
+        "  -o, --out <path>       Write generated files to this output path.",
+        "  -t, --template <path>  Use the specified template instead of the default.",
+        "  -h, --help             Display this help message."
+    ].join('\n');
+
+// Process command line parameters.
+while ((arg = argv.shift())) {
+    // If this isn't a parameter, push it onto the leftover args stack and move
+    // on.
+    if (arg.indexOf('-') !== 0) {
+        args.push(arg);
+    }
+
+    switch (arg) {
+    case '--help':
+    case '-h':
+        console.log(help);
+        process.exit();
+        break;
+
+    case '--output':
+    case '--out':
+    case '-o':
+        options.out = argv.shift();
+        break;
+
+    case '--template':
+    case '-t':
+        options.template = argv.shift();
+        break;
+    }
+}
+
+// First leftover arg (if any) is the root path; if no arg, then use the current
+// directory.
+options.rootPath = args.shift() || process.cwd();
+
+// Traverse the root path and look for directories containing a doc.json file
+// and an index.mustache file. These will be treated as documentation
+// directories and parsed.
+docPaths = selleck.findDocPaths(options.rootPath);
+
+if (!docPaths.length) {
+    log('No documentation found! Nothing to do.', 'warning');
+    process.exit();
+}
+
+// Load global template partials and pages.
+templateLayouts  = selleck.getLayouts(options.template);
+templatePartials = selleck.getPartials(options.template);
+templatePages    = selleck.getPages(options.template);
+
+// Create the output directory if it doesn't exist.
+if (!fileutils.isDirectory(options.out)) {
+    fs.mkdirSync(options.out, 0755);
+}
+
+docPaths.forEach(function(docPath) {
+    var assetsPath, html, meta, outPath, pageName, pages, partials, view;
+
+    // Get metadata from doc.json. This will be merged into the view instance,
+    // overriding instance properties if there are conflicts.
+    meta = selleck.getMetadata(docPath);
+
+    // Validate the component name.
+    if (!meta.name) {
+        log('Component name not specified; skipping: ' + docPath, 'error');
+        return;
+    }
+
+    if (meta.name.search(/^[\w\-]+$/) === -1) {
+        log('Invalid component name: ' + meta.name + '; skipping: ' + docPath, 'error');
+    }
+
+    log('Generating docs for ' + meta.name, 'info');
+
+    outPath = path.join(options.out, meta.name);
+
+    // Create an output directory for this component.
+    if (!fileutils.isDirectory(outPath)) {
+        fs.mkdirSync(outPath, 0755);
+    }
+
+    // Create a pages object containing mustache content for each .mustache
+    // page in the doc dir root.
+    pages = selleck.getPages(docPath);
+
+    // Create a partials object containing both global template-wide
+    // partials and component-specific partials. Allow component partials to
+    // override template-wide partials.
+    partials = util.merge(templatePartials, selleck.getPartials(docPath));
+
+    // Create a view instance, which will be exposed to the page templates and
+    // will be the source for all their data.
+    view = new selleck.ComponentView(meta, {layout: templateLayouts.component});
+
+    // Render each page to HTML and write it to the output directory.
+    for (pageName in pages) {
+        html = [];
+
+        // Render using a custom "send" function, since Mustache's default one
+        // strips out empty lines, and that's dumb.
+        selleck.render(pages[pageName], view, partials, function (line) {
+            html.push(line);
+        });
+
+        fs.writeFileSync(path.join(outPath, pageName + '.html'), html.join('\n'));
+    }
+
+    // If the component directory contains an "assets" subdirectory, copy it to
+    // the output directory.
+    assetsPath = path.join(docPath, 'assets');
+
+    if (fileutils.isDirectory(assetsPath)) {
+        fileutils.copyPath(assetsPath, path.join(outPath, 'assets'), function () {});
+    }
+});
+
+log('Done! Docs were generated at: ' + options.out, 'info');

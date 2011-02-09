@@ -1,0 +1,15 @@
+<h2 id="start">Getting Started</h2>
+<h3 id="dependencies">Include Dependencies</h3>
+
+{{#code}}
+<script src="http://yui.yahooapis.com/{{yuiVersion}}/build/yui/yui-min.js" charset="utf-8"></script>
+{{/code}}
+
+<h3 id="yui-instance">The YUI Instance</h3>
+
+{{#code}}
+// Create a new YUI instance and populate it with the required modules.
+YUI().use({{getUseStatement}}) {
+  // {{displayName}} is available and ready for use.
+}
+{{/code}}

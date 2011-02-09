@@ -1,0 +1,19 @@
+{
+  "name"       : "selleck",
+  "description": "Generator for YUI's mustache-based user documentation.",
+  "version"    : "0.0.1-dev",
+  "keywords"   : ["yui", "mustache", "docs"],
+  "homepage"   : "http://yuilibrary.com/",
+  "author"     : "Ryan Grove <ryan@wonko.com> (http://wonko.com/)",
+
+  "engines": ["node >=0.3.7"],
+
+  "dependencies": {
+    "mustache": "0.3.x"
+  },
+
+  "main": "index",
+  "bin" : {"selleck": "./bin/selleck"},
+
+  "directories": {"lib": "./lib"}
+}
