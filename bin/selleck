@@ -73,11 +73,6 @@ options.rootPath = args.shift() || process.cwd();
 // directories and parsed.
 docPaths = selleck.findDocPaths(options.rootPath);
 
-if (!docPaths.length) {
-    log('No documentation found! Nothing to do.', 'warning');
-    process.exit();
-}
-
 // Load global template metadata, layouts, partials, and pages.
 templateLayouts  = selleck.getLayouts(options.template);
 templateMeta     = selleck.getMetadata(options.template);
