@@ -11,15 +11,19 @@ var fs      = require('fs'),
     argv     = process.argv.slice(2), // get rid of the leading 'node' arg
     docPaths = [],
     log      = selleck.log,
+    pageName,
 
+    // Default values for command line options.
     options  = {
         out     : './docs',
         template: selleck.defaultTemplate
     },
 
     templateLayouts,
+    templateMeta,
     templatePages,
     templatePartials,
+    view,
 
     help = [
         "Generates YUI user documentation, mustache-style.",
@@ -74,22 +78,52 @@ if (!docPaths.length) {
     process.exit();
 }
 
-// Load global template partials and pages.
+// Load global template metadata, layouts, partials, and pages.
 templateLayouts  = selleck.getLayouts(options.template);
+templateMeta     = selleck.getMetadata(options.template);
 templatePartials = selleck.getPartials(options.template);
 templatePages    = selleck.getPages(options.template);
+
+// Validate template metadata.
+if (!templateMeta.projectName) {
+    log('Project name not specified: ' + options.template, 'error');
+    process.exit(1);
+}
 
 // Create the output directory if it doesn't exist.
 if (!fileutils.isDirectory(options.out)) {
     fs.mkdirSync(options.out, 0755);
 }
 
-docPaths.forEach(function(docPath) {
-    var assetsPath, html, meta, outPath, pageName, pages, partials, view;
+// Generate global docs.
+log('Generating global docs', 'info');
 
-    // Get metadata from doc.json. This will be merged into the view instance,
-    // overriding instance properties if there are conflicts.
-    meta = selleck.getMetadata(docPath);
+// Create a view instance, which will be exposed to the page templates and
+// will be the source for all their data.
+view = new selleck.View(templateMeta, {layout: templateLayouts.main});
+
+// Render each page to HTML and write it to the output directory.
+for (pageName in templatePages) {
+    fs.writeFileSync(path.join(options.out, pageName + '.html'),
+            selleck.render(templatePages[pageName], view, templatePartials));
+}
+
+// If the component directory contains an "assets" subdirectory, copy it to
+// the output directory.
+assetsPath = path.join(options.template, 'assets');
+
+if (fileutils.isDirectory(assetsPath)) {
+    fileutils.copyPath(assetsPath, path.join(options.out, 'assets'), true, function () {});
+}
+
+// Generate component docs.
+docPaths.forEach(function(docPath) {
+    var assetsPath, meta, outPath, pageName, pages, partials, view;
+
+    // Get metadata from doc.json. This will be merged into the global template
+    // metadata and the view instance itself, with the component-level metadata
+    // taking precedence wherever there are conflicts.
+    meta = util.merge(templateMeta, selleck.getMetadata(docPath));
 
     // Validate the component name.
     if (!meta.name) {
@@ -125,15 +159,8 @@ docPaths.forEach(function(docPath) {
 
     // Render each page to HTML and write it to the output directory.
     for (pageName in pages) {
-        html = [];
-
-        // Render using a custom "send" function, since Mustache's default one
-        // strips out empty lines, and that's dumb.
-        selleck.render(pages[pageName], view, partials, function (line) {
-            html.push(line);
-        });
-
-        fs.writeFileSync(path.join(outPath, pageName + '.html'), html.join('\n'));
+        fs.writeFileSync(path.join(outPath, pageName + '.html'),
+                selleck.render(pages[pageName], view, partials));
     }
 
     // If the component directory contains an "assets" subdirectory, copy it to
@@ -141,7 +168,7 @@ docPaths.forEach(function(docPath) {
     assetsPath = path.join(docPath, 'assets');
 
     if (fileutils.isDirectory(assetsPath)) {
-        fileutils.copyPath(assetsPath, path.join(outPath, 'assets'), function () {});
+        fileutils.copyPath(assetsPath, path.join(outPath, 'assets'), true, function () {});
     }
 });
 

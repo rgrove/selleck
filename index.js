@@ -1,6 +1,9 @@
 var fs        = require('fs'),
     path      = require('path'),
+
+    jsdom     = require('jsdom').jsdom,
     mustache  = require('mustache'),
+
     fileutils = require('./lib/fileutils'),
     util      = require('./lib/util'); // Selleck util, not Node util.
 
@@ -146,13 +149,21 @@ exports.log = log;
 /**
 @method render
 **/
-function render(content, view, partials, sendFunction) {
+function render(content, view, partials) {
+    var html = [];
+
+    function sendFunction(line) {
+        html.push(line);
+    }
+
     if (view.layout) {
-        return mustache.to_html(view.layout, view,
+        mustache.to_html(view.layout, view,
                 util.merge(partials || {}, {layout_content: content}),
                 sendFunction);
     } else {
-        return mustache.to_html(content, view, partials || {}, sendFunction);
+        mustache.to_html(content, view, partials || {}, sendFunction);
     }
+
+    return html.join('\n');
 }
 exports.render = render;

@@ -1,0 +1,120 @@
+/*
+Font sizes for all selectors other than the body are given in percentages,
+with 100% equal to 15px. To calculate a font size percentage, multiply the
+desired size in pixels by 6.666666667.
+
+Here's a quick lookup table:
+
+10px - 66.666%
+11px - 73.333%
+12px - 80%
+13px - 86.667%
+14px - 93.333%
+15px - 100%
+16px - 106.667%
+17px - 113.333%
+18px - 120%
+19px - 126.667%
+20px - 133.333%
+*/
+
+html {
+    background: #fff;
+    color: #333;
+    overflow-y: scroll;
+}
+
+body {
+    font: 15px/1.3 Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', 'Times New Roman', serif;
+    margin: 0 auto;
+    padding: 1em 1.5em;
+    max-width: 860px;
+}
+
+a { text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+h1, h2, h3, h4, h5, h6 { line-height: 1.1; }
+
+h1 {
+    font-size: 240%; /* 36px */
+    line-height: 1.1;
+    margin-bottom: 0.9em;
+    text-shadow: 1px 1px 2px #afafaf;
+}
+
+h2 {
+    font-size: 140%; /* 21px */
+    margin-top: 1.3em;
+}
+
+h3, h4, h5, h6 { margin: 1.6em 0 1em; }
+h3 { font-size: 120%; } /* 18px */
+h4, h5, h6 { font-size: 100%; } /* 15px */
+
+p { margin: 1.1em 0; }
+dd p, td p { margin-bottom: 0; }
+dd p:first-child, td p:first-child { margin-top: 0; }
+
+/* -- Code styles ----------------------------------------------------------- */
+code, pre {
+    font-family: Menlo, 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Consolas', 'Monaco', fixed;
+    font-size: 86.667%; /* 13px */
+    line-height: 1.35;
+}
+
+pre.code {
+    background: #f5f5f5;
+    border: 1px solid #efefef;
+    border-left: 4px solid #dfdfdf;
+    overflow-x: auto;
+    padding: 0.3em 0.6em;
+}
+
+/* Don't reduce the font size of <code> elements inside <pre> blocks. */
+pre code { font-size: 100%; }
+
+/* -- Table styles ---------------------------------------------------------- */
+caption, th { text-align: left; }
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #fff;
+    padding: 5px 12px;
+    vertical-align: top;
+}
+
+td { background: #E5EDF1; }
+td dl { margin: 0; }
+td dl dl { margin: 1em 0; }
+
+th {
+    background: #6C8EA1;
+    color: #fff;
+    /* 14px/18px */
+    font: bold 93.333%/126.667% 'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, sans-serif;
+    text-transform: uppercase;
+}
+
+/* -- List styles ----------------------------------------------------------- */
+.toc {
+    margin-left: 0;
+    padding-left: 20px;
+}
+
+.toc ol, .toc ul {
+    margin-left: 0;
+    padding-left: 30px;
+}
+
+.toc li { list-style-type: square; }
+
+.spaced li { margin: 0.8em 0; }
+
+dd { margin: 0.2em 0 0.7em 1em; }
+dl { margin: 1em 0; }
+dt { font-weight: bold; }
