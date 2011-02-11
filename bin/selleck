@@ -79,92 +79,51 @@ templateMeta     = selleck.getMetadata(options.template);
 templatePartials = selleck.getPartials(options.template);
 templatePages    = selleck.getPages(options.template);
 
-// Validate template metadata.
-if (!templateMeta.projectName) {
-    log('Project name not specified: ' + options.template, 'error');
-    process.exit(1);
-}
-
-// Create the output directory if it doesn't exist.
-if (!fileutils.isDirectory(options.out)) {
-    fs.mkdirSync(options.out, 0755);
-}
-
 // Generate global docs.
 log('Generating global docs', 'info');
 
-// Create a view instance, which will be exposed to the page templates and
-// will be the source for all their data.
-view = new selleck.View(templateMeta, {layout: templateLayouts.main});
-
-// Render each page to HTML and write it to the output directory.
-for (pageName in templatePages) {
-    fs.writeFileSync(path.join(options.out, pageName + '.html'),
-            selleck.render(templatePages[pageName], view, templatePartials));
-}
-
-// If the component directory contains an "assets" subdirectory, copy it to
-// the output directory.
-assetsPath = path.join(options.template, 'assets');
-
-if (fileutils.isDirectory(assetsPath)) {
-    fileutils.copyPath(assetsPath, path.join(options.out, 'assets'), true, function () {});
-}
+selleck.generate(options.template, options.out, {
+    layouts  : templateLayouts,
+    meta     : templateMeta,
+    partials : templatePartials,
+    pages    : templatePages,
+    skipLoad : true, // Don't reload stuff from the input dir.
+    validator: globalValidator
+});
 
 // Generate component docs.
 docPaths.forEach(function(docPath) {
-    var assetsPath, meta, outPath, pageName, pages, partials, view;
+    log('Generating docs for ' + docPath, 'info');
 
-    // Get metadata from doc.json. This will be merged into the global template
-    // metadata and the view instance itself, with the component-level metadata
-    // taking precedence wherever there are conflicts.
-    meta = util.merge(templateMeta, selleck.getMetadata(docPath));
-
-    // Validate the component name.
-    if (!meta.name) {
-        log('Component name not specified; skipping: ' + docPath, 'error');
-        return;
-    }
-
-    if (meta.name.search(/^[\w\-]+$/) === -1) {
-        log('Invalid component name: ' + meta.name + '; skipping: ' + docPath, 'error');
-    }
-
-    log('Generating docs for ' + meta.name, 'info');
-
-    outPath = path.join(options.out, meta.name);
-
-    // Create an output directory for this component.
-    if (!fileutils.isDirectory(outPath)) {
-        fs.mkdirSync(outPath, 0755);
-    }
-
-    // Create a pages object containing mustache content for each .mustache
-    // page in the doc dir root.
-    pages = selleck.getPages(docPath);
-
-    // Create a partials object containing both global template-wide
-    // partials and component-specific partials. Allow component partials to
-    // override template-wide partials.
-    partials = util.merge(templatePartials, selleck.getPartials(docPath));
-
-    // Create a view instance, which will be exposed to the page templates and
-    // will be the source for all their data.
-    view = new selleck.ComponentView(meta, {layout: templateLayouts.component});
-
-    // Render each page to HTML and write it to the output directory.
-    for (pageName in pages) {
-        fs.writeFileSync(path.join(outPath, pageName + '.html'),
-                selleck.render(pages[pageName], view, partials));
-    }
-
-    // If the component directory contains an "assets" subdirectory, copy it to
-    // the output directory.
-    assetsPath = path.join(docPath, 'assets');
-
-    if (fileutils.isDirectory(assetsPath)) {
-        fileutils.copyPath(assetsPath, path.join(outPath, 'assets'), true, function () {});
-    }
+    selleck.generate(docPath, options.out, {
+        component: true,
+        layouts  : templateLayouts,
+        meta     : templateMeta,
+        partials : templatePartials,
+        pages    : templatePages,
+        validator: componentValidator
+    });
 });
 
-log('Done! Docs were generated at: ' + options.out, 'info');
+log('Done! Docs were written to: ' + options.out, 'info');
+
+// -- Functions ----------------------------------------------------------------
+function componentValidator(data) {
+    // Validate the component name.
+    if (!data.meta.name) {
+        log('Component name not specified; skipping: ' + docPath, 'error');
+        return false;
+    }
+
+    if (data.meta.name.search(/^[\w\-]+$/) === -1) {
+        log('Invalid component name: ' + data.meta.name + '; skipping: ' + docPath, 'error');
+        return false;
+    }
+}
+
+function globalValidator(data) {
+    if (!data.meta.projectName) {
+        log('Project name not specified: ' + options.template, 'error');
+        process.exit(1);
+    }
+}

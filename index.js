@@ -48,6 +48,91 @@ function findDocPaths(root) {
 exports.findDocPaths = findDocPaths;
 
 /**
+@method generate
+**/
+function generate(inDir, outDir, options) {
+    var assetsDir = path.join(inDir, 'assets'),
+        outStats, pageName;
+
+    if (options && options.skipLoad) {
+        // Skip loading layouts, metadata, pages, and partials and assume that
+        // the caller has provided them if they want them.
+        options = util.merge({
+            layouts : {},
+            meta    : {},
+            pages   : {},
+            partials: {}
+        }, options);
+    } else {
+        // Gather layouts, metadata, pages, and partials from the specified
+        // input directory, then merge them into the provided options (if any).
+        //
+        // Gathered data will override provided data if there are conflicts, in
+        // order to support a use case where global data are provided by the
+        // caller and overridden by more specific component-level data gathered
+        // from the input directory.
+        options = util.merge(options || {}, {
+            layouts  : getLayouts(inDir),
+            meta     : getMetadata(inDir),
+            pages    : getPages(inDir),
+            partials : getPartials(inDir)
+        });
+    }
+
+    // If a validator function was provided, run it, and skip the generation
+    // step if it returns false.
+    if (options.validator && options.validator(options) === false) {
+        return false;
+    }
+
+    // Create a view instance if one wasn't provided in the options hash.
+    if (!options.view) {
+        if (options.component) {
+            options.view = new exports.ComponentView(options.meta, {
+                layout: options.layouts.component
+            });
+        } else {
+            options.view = new exports.View(options.meta, {
+                layout: options.layouts.main
+            });
+        }
+    }
+
+    // Append meta.name to the output directory if this is a component.
+    if (options.component) {
+        outDir = path.join(outDir, options.meta.name);
+    }
+
+    outStats = fileutils.statSync(outDir);
+
+    // Create the output directory if it doesn't exist.
+    if (outStats) {
+        if (!outStats.isDirectory()) {
+            throw new Error('Output path already exists and is not a directory: ' + outDir);
+        }
+    } else {
+        // TODO: mkdir -p
+        fs.mkdirSync(outDir, 0755);
+    }
+
+    // If the input directory contains an "assets" subdirectory, copy it to the
+    // output directory. This is an async operation, but we don't really care
+    // when it finishes, so we don't wait for it.
+    if (fileutils.isDirectory(assetsDir)) {
+        fileutils.copyPath(assetsDir, path.join(outDir, 'assets'), true, function () {});
+    }
+
+    // Render each page to HTML and write it to the output directory.
+    for (pageName in options.pages) {
+        fs.writeFileSync(path.join(outDir, pageName + '.html'),
+                render(options.pages[pageName], options.view, options.partials));
+    }
+
+    return true;
+}
+exports.generate = generate;
+
+/**
 @method getMetadata
 **/
 function getMetadata(dir) {
