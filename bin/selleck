@@ -12,6 +12,8 @@ var fs      = require('fs'),
     docPaths = [],
     log      = selleck.log,
 
+    nextArg,
+
     // Default values for command line options.
     options  = {
         out     : './docs',
@@ -30,6 +32,8 @@ var fs      = require('fs'),
         "",
         "Options:",
         "  -o, --out <path>       Write generated files to this output path.",
+        "  -s, --server [port]    Run Selleck as a web server for real-time previews of",
+        "                         changes while editing docs.",
         "  -t, --template <path>  Use the specified template instead of the default.",
         "  -h, --help             Display this help message."
     ].join('\n');
@@ -55,6 +59,20 @@ while ((arg = argv.shift())) {
         options.out = argv.shift();
         break;
 
+    case '--server':
+    case '-s':
+        options.server = true;
+
+        if ((nextArg = argv.shift())) {
+            if (nextArg.search(/^\d+$/) === -1) {
+                // Not a port number; put the argument back on the argv array.
+                argv.unshift(nextArg);
+            } else {
+                options.serverPort = +nextArg;
+            }
+        }
+        break;
+
     case '--template':
     case '-t':
         options.template = argv.shift();
@@ -66,44 +84,49 @@ while ((arg = argv.shift())) {
 // directory.
 options.rootPath = args.shift() || process.cwd();
 
-// Traverse the root path and look for directories containing a doc.json file
-// and an index.mustache file. These will be treated as documentation
-// directories and parsed.
-docPaths = selleck.findDocPaths(options.rootPath);
+// If running as a server, start the server instead of continuing.
+if (options.server) {
+    require('selleck/server')(options);
+} else {
+    // Traverse the root path and look for directories containing a doc.json
+    // file and an index.mustache file. These will be treated as documentation
+    // directories and parsed.
+    docPaths = selleck.findDocPaths(options.rootPath);
 
-// Load global template metadata, layouts, partials, and pages.
-templateLayouts  = selleck.getLayouts(options.template);
-templateMeta     = selleck.getMetadata(options.template);
-templatePartials = selleck.getPartials(options.template);
-templatePages    = selleck.getPages(options.template);
+    // Load global template metadata, layouts, partials, and pages.
+    templateLayouts  = selleck.getLayouts(options.template);
+    templateMeta     = selleck.getMetadata(options.template);
+    templatePartials = selleck.getPartials(options.template);
+    templatePages    = selleck.getPages(options.template);
 
-// Generate global docs.
-log('Generating global docs', 'info');
+    // Generate global docs.
+    log('Generating global docs', 'info');
 
-selleck.generate(options.template, options.out, {
-    layouts  : templateLayouts,
-    meta     : templateMeta,
-    partials : templatePartials,
-    pages    : templatePages,
-    skipLoad : true, // Don't reload stuff from the input dir.
-    validator: globalValidator
-});
-
-// Generate component docs.
-docPaths.forEach(function(docPath) {
-    log('Generating docs for ' + docPath, 'info');
-
-    selleck.generate(docPath, options.out, {
-        component: true,
+    selleck.generate(options.template, options.out, {
         layouts  : templateLayouts,
         meta     : templateMeta,
         partials : templatePartials,
         pages    : templatePages,
-        validator: componentValidator
+        skipLoad : true, // Don't reload stuff from the input dir.
+        validator: globalValidator
     });
-});
 
-log('Done! Docs were written to: ' + options.out, 'info');
+    // Generate component docs.
+    docPaths.forEach(function(docPath) {
+        log('Generating docs for ' + docPath, 'info');
+
+        selleck.generate(docPath, options.out, {
+            component: true,
+            layouts  : templateLayouts,
+            meta     : templateMeta,
+            partials : templatePartials,
+            pages    : templatePages,
+            validator: componentValidator
+        });
+    });
+
+    log('Done! Docs were written to: ' + options.out, 'info');
+}
 
 // -- Functions ----------------------------------------------------------------
 function componentValidator(data) {

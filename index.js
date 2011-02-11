@@ -167,6 +167,19 @@ function getLayouts(dir) {
 exports.getLayouts = getLayouts;
 
 /**
+Loads and returns the content of the specified page file.
+
+@method getPage
+@param {String} pagePath Path to a single `.mustache` page.
+@return {String|null} Page content, or `null` if not found.
+**/
+function getPage(pagePath) {
+    if (!fileutils.isFile(pagePath)) { return null; }
+    return fs.readFileSync(pagePath, 'utf8');
+}
+exports.getPage = getPage;
+
+/**
 Loads pages (files with a .mustache extension) in the specified directory and
 returns an object containing a mapping of page names (the part of the filename)
 preceding the .mustache extension) to page content.
