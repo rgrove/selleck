@@ -30,12 +30,16 @@ var fs      = require('fs'),
         "",
         "Usage: selleck [options] [path]",
         "",
-        "Options:",
+        "Common Options:",
         "  -o, --out <path>       Write generated files to this output path.",
         "  -s, --server [port]    Run Selleck as a web server for real-time previews of",
         "                         changes while editing docs.",
         "  -t, --template <path>  Use the specified template instead of the default.",
-        "  -h, --help             Display this help message."
+        "  -h, --help             Display this help message.",
+        "",
+        "Other Options:",
+        "  -O, --only <path>      Only generate docs from the specified directory, and",
+        "                         don't use a template."
     ].join('\n');
 
 // Process command line parameters.
@@ -51,6 +55,16 @@ while ((arg = argv.shift())) {
     case '-h':
         console.log(help);
         process.exit();
+        break;
+
+    case '--only':
+    case '-O':
+        if (options.template !== selleck.defaultTemplate) {
+            log("--only and --template can't be used together.", 'error');
+            process.exit(1);
+        }
+
+        options.template = options.only = argv.shift();
         break;
 
     case '--output':
@@ -75,6 +89,11 @@ while ((arg = argv.shift())) {
 
     case '--template':
     case '-t':
+        if (options.only) {
+            log("--only and --template can't be used together.", 'error');
+            process.exit(0);
+        }
+
         options.template = argv.shift();
         break;
     }
@@ -88,10 +107,12 @@ options.rootPath = args.shift() || process.cwd();
 if (options.server) {
     require('selleck/server')(options);
 } else {
-    // Traverse the root path and look for directories containing a doc.json
-    // file and an index.mustache file. These will be treated as documentation
-    // directories and parsed.
-    docPaths = selleck.findDocPaths(options.rootPath);
+    if (!options.only) {
+        // Traverse the root path and look for directories containing a doc.json
+        // file and an index.mustache file. These will be treated as
+        // documentation directories and parsed.
+        docPaths = selleck.findDocPaths(options.rootPath);
+    }
 
     // Load global template metadata, layouts, partials, and pages.
     templateLayouts  = selleck.getLayouts(options.template);
@@ -113,6 +134,9 @@ if (options.server) {
 
     // Generate component docs.
     docPaths.forEach(function(docPath) {
+        // If the docPath and the template path are the same thing, skip it.
+        if (docPath === options.template) { return; }
+
         log('Generating docs for ' + docPath, 'info');
 
         selleck.generate(docPath, options.out, {
@@ -129,7 +153,7 @@ if (options.server) {
 }
 
 // -- Functions ----------------------------------------------------------------
-function componentValidator(data) {
+function componentValidator(data, docPath) {
     // Validate the component name.
     if (!data.meta.name) {
         log('Component name not specified; skipping: ' + docPath, 'error');
@@ -142,9 +166,9 @@ function componentValidator(data) {
     }
 }
 
-function globalValidator(data) {
+function globalValidator(data, docPath) {
     if (!data.meta.projectName) {
-        log('Project name not specified: ' + options.template, 'error');
+        log('Project name not specified: ' + docPath, 'error');
         process.exit(1);
     }
 }

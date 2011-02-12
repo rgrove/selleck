@@ -79,7 +79,7 @@ function generate(inDir, outDir, options) {
 
     // If a validator function was provided, run it, and skip the generation
     // step if it returns false.
-    if (options.validator && options.validator(options) === false) {
+    if (options.validator && options.validator(options, inDir) === false) {
         return false;
     }
 
