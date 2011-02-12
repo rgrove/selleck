@@ -1,7 +1,5 @@
 var fs        = require('fs'),
     path      = require('path'),
-
-    jsdom     = require('jsdom').jsdom,
     mustache  = require('mustache'),
 
     fileutils = require('./lib/fileutils'),
