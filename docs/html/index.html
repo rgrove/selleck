@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Selleck User Guide</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+
+<h1>Selleck User Guide</h1>
+
+<p>
+Selleck is a tool for generating user documentation from <a href="http://mustache.github.com/">Mustache</a>-based templates. Its primary purpose is to generate the documentation for YUI 3 and its massive suite of components, which it does by walking a directory tree and looking for component documentation directories. It then transforms the doc templates into HTML and writes the generated files to an output directory.
+</p>
+
+<p>
+At the moment this document and Selleck itself are pretty YUI-specific, but over time Selleck will become a more generic tool, and the YUI-specific parts of the workflow (and this document) will be broken out.
+</p>
+
+<h2 id="requirements">Requirements</h2>
+
+<p>
+Selleck requires <a href="http://nodejs.org/">Node.js</a> 0.3.7 or greater. It also requires a few third-party dependencies, but these will be installed automatically by npm.
+</p>
+
+<h2 id="installation">Installation</h2>
+
+<p>
+For the moment, Selleck is only available from the internal git repo. To clone the repo and install Selleck, run the following commands:
+</p>
+
+<pre class="terminal"><span class="noselect">$ </span>git clone git@yuisource.corp.yahoo.com:selleck
+<span class="noselect">$ </span>cd selleck
+<span class="noselect">$ </span>npm install .
+</pre>
+<h2 id="usage">Usage</h2>
+
+<p>
+After installation, you'll have a new command line application named <kbd>selleck</kbd>. Run <kbd>selleck -h</kbd> for a summary of the options Selleck supports.
+</p>
+
+<p>
+If no options are given, Selleck will search the current directory and all its subdirectories recursively, looking for documentation directories. It will generate HTML documentation from all the doc directories it finds, and will write the generated docs to <samp>./docs</samp>:
+</p>
+
+<pre class="terminal"><span class="noselect">$ </span>cd ~&#x2F;src&#x2F;yui&#x2F;yui3
+<span class="noselect">$ </span>selleck
+[info] Generating global docs
+[info] Generating docs for &#x2F;Users&#x2F;rgrove&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;src&#x2F;autocomplete&#x2F;doc
+[info] Generating docs for &#x2F;Users&#x2F;rgrove&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;src&#x2F;history&#x2F;doc
+[info] Done! Docs were written to: .&#x2F;docs
+</pre>
+<p>
+To generate documentation from a directory other than the current directory, pass the directory as an argument.
+</p>
+
+<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3
+</pre>
+<p>
+You may also optionally specify an output directory for the generated docs.
+</p>
+
+<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --out ~&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;docs
+</pre>
+<p>
+To specify a documentation template other than Selleck's default template, use the <kbd>--template</kbd> option/
+</p>
+
+<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --template ~&#x2F;another&#x2F;template&#x2F;dir
+</pre>
+<p>
+To generate documentation only from a single directory, bypassing the component scan, and without using a template, use the <samp>--only</samp> option.
+</p>
+
+<pre class="terminal"><span class="noselect">$ </span>selleck --only &#x2F;path&#x2F;to&#x2F;docs
+</pre>
+<p>
+Finally, the <samp>--server</samp> option will start a web server that you can use to preview your documentation in real time as you make changes, so that you don't need to regenerate after every change. It can be used in combination with any of the other options.
+</p>
+
+<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --server
+[info] Selleck is now giving Ferrari rides at http:&#x2F;&#x2F;localhost:3000
+</pre>
+<h2 id="docdirs">Documentation Directory Structure</h2>
+
+<p>
+Selleck considers any directory that contains both a <samp>doc.json</samp> file and an <samp>index.mustache</samp> file to be a documentation directory. The following table describes the required and optional contents and structure of a documentation directory.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>File/Directory</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td><samp>assets/</samp></td>
+      <td>
+        <p>
+        <i>Optional</i>. Directory containing static assets (such as images, JavaScript, and CSS) used by the documentation. This directory and its contents will be copied to the output directory for the current component. If an <samp>assets/</samp> directory already exists under the output directory, it will be deleted to make way for the new one.
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td><samp>partial/</samp></td>
+      <td>
+        <p>
+        <i>Optional</i>. Directory containing partials. A partial is a <samp>.mustache</samp> file that can be included in another documentation page using a directive like <code>&#123;{>partial-name}}</code>, where <code>partial-name</code> is the name (minus extension) of the partial file (e.g. <samp><i>partial-name</i>.mustache</samp>).
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td><samp>doc.json</samp></td>
+      <td>
+        <p>
+        <strong>Required.</strong> JSON file containing metadata which will be made available to documentation templates.
+        </p>
+        
+        <p>
+        The metadata is freeform, but must contain at least a <code>name</code> property which contains the name of the component. This name will be used as the name of the component's output directory, among other things. Here's a sample <samp>doc.json</samp> file:
+        </p>
+
+<pre class="prettyprint">
+{
+  "name": "my-component",
+  "foo" : "arbitrary data",
+  "bar" : ["baz"]
+}
+</pre>
+
+        <p>
+        This component's Mustache templates can then include this data in the documentation using the Mustache tags <code>&#123;{name}}</code>, <code>&#123;{foo}}</code>, and <code>&#123;{bar}}</code>.
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td><samp>index.mustache</samp></td>
+      <td>
+        <p>
+        <strong>Required.</strong> Main Mustache template for the component. This will be parsed and generated as <samp>index.html</samp> in the component's output directory.
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+In addition to the files listed here, the documentation directory may contain any number of <samp>.mustache</samp> files. These will be parsed and generated as <samp>.html</samp> files in the component's output directory.
+</p>
+
+<h2 id="doc-templates">Documentation Templates</h2>
+
+<p>
+The <a href="http://mustache.github.com/mustache.5.html">Mustache Manual</a> describes the Mustache template language. If you haven't used Mustache before, you may want to read the manual before continuing.
+</p>
+
+<p>
+As mentioned above, doc templates can include any property from the <samp>doc.json</samp> metadata file by wrapping its name in <code>&#123;{mustaches}}</code>. In addition to this freeform metadata, Selleck also provides several predefined helper functions that templates can use to transform or wrap blocks of content.
+</p>
+
+<h3 id="global-helpers">Global Helpers</h3>
+
+<p>
+Global helpers can be used in any Selleck template, whether at the global project-wide template level or at the component level.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td><code>code</code></td>
+      <td>Section</td>
+      <td>
+        <p>
+        Escapes HTML characters in the given content and wraps it in a syntax-highlighted <code>&lt;pre&gt;</code> block.
+        </p>
+      </td>
+      <td>
+<pre>
+&#123;{#code}}
+YUI().use('example', function () {
+  // Here's some example code that will be escaped and
+  // highlighted.
+});
+&#123;{/code}}
+</pre>
+      </td>
+    </tr>
+
+    <tr>
+      <td><code>terminal</code></td>
+      <td>Section</td>
+      <td>
+        <p>
+        Similar to <code>code</code>, but for commands that should be entered into a terminal. Shell prompts (<code>$</code> or <code>#</code>) at the beginnings of lines will be made non-selectable to make copying and pasting easier.
+      </td>
+      <td>
+<pre>
+&#123;{#terminal}}
+$ cd /foo
+$ make install clean
+&#123;{/terminal}}
+</pre>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="component-helpers">Component Helpers</h3>
+
+<p>
+Component helpers can be used in component templates, but not in global templates.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td><code>intro</code></td>
+      <td>Section</td>
+      <td>
+        Wraps the given section content in an intro <code>&lt;div&gt;</code>. Used for the introductory description at the top of a component's documentation page.
+      </td>
+      <td>
+<pre>
+&#123;{#intro}}
+&lt;p&gt;
+This is some intro content for a component.
+&lt;/p&gt;
+&#123;{/intro}}
+</pre>
+      </td>
+
+    <tr>
+      <td><code>title</code></td>
+      <td>Variable</td>
+      <td>
+        <p>
+        Page title for this component: a concatenation of the global <code>projectName</code> metadata property with the component's <code>name</code> metadata property.
+        </p>
+      </td>
+      <td>
+        <pre>&#123;{title}}</pre>
+      </td>
+    </tr>
+
+    <tr>
+      <td><code>useParams</code></td>
+      <td>Variable</td>
+      <td>
+        <p>
+        Module name parameters for a YUI 3 <code>use()</code> statement, built from the value of the <code>use</code> property in the component's metadata.
+        </p>
+      </td>
+      <td>
+        <pre>&#123;{useParams}}</pre>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="other">Other Stuff</h2>
+
+<p>
+Selleck isn't finished yet, and there's still more to document here. For now, poke around the default template and some of the component doc directories in the YUI 3 source tree to see what's possible.
+</p>
+
+</body>
+</html>
