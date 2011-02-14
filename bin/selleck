@@ -1,4 +1,10 @@
 #!/usr/bin/env node
+/*
+Selleck
+Copyright (c) 2011 Yahoo! Inc.
+Licensed under the BSD License.
+*/
+
 var selleck   = require('selleck'),
     fileutils = require('selleck/fileutils'),
     util      = require('selleck/util'), // selleck's util, not Node's util.

@@ -6,6 +6,10 @@
   "homepage"   : "http://yuilibrary.com/",
   "author"     : "Ryan Grove <ryan@wonko.com> (http://wonko.com/)",
 
+  "licenses": [
+      {"type": "BSD", "url": "http://developer.yahoo.com/yui/license.html"}
+  ],
+
   "engines": ["node >=0.3.7"],
 
   "dependencies": {

@@ -1,3 +1,9 @@
+/*
+Selleck
+Copyright (c) 2011 Yahoo! Inc.
+Licensed under the BSD License.
+*/
+
 var fs        = require('fs'),
     path      = require('path'),
     mustache  = require('mustache'),
