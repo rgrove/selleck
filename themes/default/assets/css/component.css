@@ -2,13 +2,3 @@ h1 {
     margin-left: -15px; /* to match the intro box */
     margin-right: -15px;
 }
-
-.intro {
-    background: #E2EEFB;
-    border: 1px solid #BDD6F4;
-    margin-bottom: 2em;
-    margin-left: -1em; /* to preserve text alignment and improve readability */
-    margin-right: -1em;
-    padding: 0em 1em;
-}
-

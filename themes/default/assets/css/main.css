@@ -56,14 +56,14 @@ p { margin: 1.1em 0; }
 dd p, td p { margin-bottom: 0; }
 dd p:first-child, td p:first-child { margin-top: 0; }
 
-/* -- Code styles ----------------------------------------------------------- */
+/* -- Code and examples ----------------------------------------------------- */
 code, kbd, pre, samp {
     font-family: Menlo, 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Consolas', 'Monaco', fixed;
     font-size: 86.667%; /* 13px */
     line-height: 1.35;
 }
 
-code, kbd, samp { color: #555; }
+p code, p kbd, p samp { color: #555; }
 
 pre.code, pre.terminal {
     overflow-x: auto;
@@ -89,8 +89,6 @@ pre code, pre kbd, pre samp {
     font-size: 100%;
 }
 
-table pre:first-child { margin-top: 0; }
-
 /* Used to denote text that shouldn't be selectable, such as line numbers or
    shell prompts. Guess which browser this doesn't work in. */
 .noselect {
@@ -101,7 +99,7 @@ table pre:first-child { margin-top: 0; }
     user-select: none;
 }
 
-/* -- Table styles ---------------------------------------------------------- */
+/* -- Tables ---------------------------------------------------------------- */
 caption, th { text-align: left; }
 
 table {
@@ -118,6 +116,7 @@ td, th {
 td { background: #E5EDF1; }
 td dl { margin: 0; }
 td dl dl { margin: 1em 0; }
+td pre:first-child { margin-top: 0; }
 
 th {
     background: #6C8EA1;
@@ -127,7 +126,7 @@ th {
     text-transform: uppercase;
 }
 
-/* -- List styles ----------------------------------------------------------- */
+/* -- Lists ----------------------------------------------------------------- */
 .toc {
     margin-left: 0;
     padding-left: 20px;
@@ -139,9 +138,18 @@ th {
 }
 
 .toc li { list-style-type: square; }
-
 .spaced li { margin: 0.8em 0; }
 
 dd { margin: 0.2em 0 0.7em 1em; }
 dl { margin: 1em 0; }
 dt { font-weight: bold; }
+
+/* -- Misc ------------------------------------------------------------------ */
+.intro {
+    background: #E2EEFB;
+    border: 1px solid #BDD6F4;
+    margin-bottom: 2em;
+    margin-left: -1em; /* to preserve text alignment and improve readability */
+    margin-right: -1em;
+    padding: 0em 1em;
+}
