@@ -10,7 +10,7 @@
 <h1>Selleck User Guide</h1>
 
 <p>
-Selleck is a tool for generating user documentation from <a href="http://mustache.github.com/">Mustache</a>-based templates. Its primary purpose is to generate the documentation for YUI 3 and its massive suite of components, which it does by walking a directory tree and looking for component documentation directories. It then transforms the doc templates into HTML and writes the generated files to an output directory.
+Selleck is a tool for generating user documentation from <a href="http://mustache.github.com/">Mustache</a>-based templates. It was created to generate documentation for the YUI Library.
 </p>
 
 <p>
@@ -33,6 +33,48 @@ For the moment, Selleck is only available from the internal git repo. To clone t
 <span class="noselect">$ </span>cd selleck
 <span class="noselect">$ </span>npm install .
 </pre>
+<h2 id="overview">Overview</h2>
+
+<p>
+The <a href="http://mustache.github.com/mustache.5.html">Mustache Manual</a> describes the Mustache template language. If you haven't used Mustache before, you may want to read the manual before continuing.
+</p>
+
+<p>
+Selleck docs typically take the form of one top-level <strong>project</strong> with zero or more <strong>components</strong>. These are represented by directories containing various files and subdirectories that follow a few conventions.
+</p>
+
+<p>
+Projects and components have <strong>metadata</strong> files (<samp>project.json</samp> for projects, <samp>component.json</samp> for components) containing data that will be made available to page templates. Project metadata files must contain a <code>projectName</code> property, and component metadata files must contain a <code>name</code> property; otherwise, the contents of these files are completely up to you.
+</p>
+
+<p>
+Each project or component may have multiple <strong>pages</strong>. An <samp>index.mustache</samp> page is required, and any number of other <samp>.mustache</samp> pages may also be provided. These will be transformed into <samp>.html</samp> files in the generated output.
+</p>
+
+<p>
+<strong>Partials</strong> and <strong>layouts</strong> are special Mustache templates that live in the <samp>partial/</samp> and <samp>layout/</samp> directories under a project or component directory.
+</p>
+
+<p>
+A partial can be included in any page simply by referring to it by name using a special Mustache tag. For example, the tag <code>&#123;{&gt;footer}}</code> would include a partial named <samp>footer.mustache</samp>.
+</p>
+
+<p>
+A layout is like a wrapper for other pages. A layout named <samp>main.mustache</samp> will be used by default to wrap all pages, if it exists. A layout named <samp>component.mustache</samp> will be used to wrap all component pages; if no component layout exists, then component pages will use the main layout. Inside the layout, the special partial tag <code>&#123;{>layout_content}}</code> will be replaced with the page content.
+</p>
+
+<p>
+Components will automatically inherit any available partials and layouts from their parent project. If both a project and a component have a partial or layout with the same name, the component's will take precedence at the component level, while the project's will take precedence at the project level.
+</p>
+
+<p>
+Finally, projects and components may provide an <samp>assets/</samp> directory containing static <strong>assets</strong> such as CSS and JavaScript. The assets directory will be copied directly to the output folder for the project or component in question, so its assets can be referenced via relative URLs.
+</p>
+
+<p>
+See <a href="#docdirs">Documentation Directory Structure</a> for more details on the contents of project and component documentation directories.
+</p>
+
 <h2 id="usage">Usage</h2>
 
 <p>
@@ -40,14 +82,14 @@ After installation, you'll have a new command line application named <kbd>sellec
 </p>
 
 <p>
-If no options are given, Selleck will search the current directory and all its subdirectories recursively, looking for documentation directories. It will generate HTML documentation from all the doc directories it finds, and will write the generated docs to <samp>./docs</samp>:
+If no options are given, Selleck will search the current directory and all its subdirectories recursively, looking for documentation directories (it does this by searching for <samp>project.json</samp> and <samp>component.json</samp> files). It will generate HTML documentation from all the doc directories it finds, and will write the generated docs to <samp>./docs</samp> by default.
 </p>
 
 <pre class="terminal"><span class="noselect">$ </span>cd ~&#x2F;src&#x2F;yui&#x2F;yui3
 <span class="noselect">$ </span>selleck
-[info] Generating global docs
-[info] Generating docs for &#x2F;Users&#x2F;rgrove&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;src&#x2F;autocomplete&#x2F;doc
-[info] Generating docs for &#x2F;Users&#x2F;rgrove&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;src&#x2F;history&#x2F;doc
+[info] Generating project docs for &#x2F;Users&#x2F;rgrove&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;src&#x2F;common&#x2F;docs
+[info] Generating component docs for &#x2F;Users&#x2F;rgrove&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;src&#x2F;autocomplete&#x2F;docs
+[info] Generating component docs for &#x2F;Users&#x2F;rgrove&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;src&#x2F;history&#x2F;docs
 [info] Done! Docs were written to: .&#x2F;docs
 </pre>
 <p>
@@ -63,16 +105,16 @@ You may also optionally specify an output directory for the generated docs.
 <pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --out ~&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;docs
 </pre>
 <p>
-To specify a documentation template other than Selleck's default template, use the <kbd>--template</kbd> option/
+To specify a documentation theme other than Selleck's default theme, use the <kbd>--theme</kbd> option/
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --template ~&#x2F;another&#x2F;template&#x2F;dir
+<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --theme &#x2F;path&#x2F;to&#x2F;theme
 </pre>
 <p>
-To generate documentation only from a single directory, bypassing the component scan, and without using a template, use the <samp>--only</samp> option.
+To generate documentation for an explicit project rather than searching for the project, use the <samp>--project</samp> option.
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>selleck --only &#x2F;path&#x2F;to&#x2F;docs
+<pre class="terminal"><span class="noselect">$ </span>selleck --project &#x2F;path&#x2F;to&#x2F;project
 </pre>
 <p>
 Finally, the <samp>--server</samp> option will start a web server that you can use to preview your documentation in real time as you make changes, so that you don't need to regenerate after every change. It can be used in combination with any of the other options.
@@ -84,7 +126,7 @@ Finally, the <samp>--server</samp> option will start a web server that you can u
 <h2 id="docdirs">Documentation Directory Structure</h2>
 
 <p>
-Selleck considers any directory that contains both a <samp>doc.json</samp> file and an <samp>index.mustache</samp> file to be a documentation directory. The following table describes the required and optional contents and structure of a documentation directory.
+The following table describes the required and optional contents and structure of a project or component documentation directory.
 </p>
 
 <table>
@@ -106,6 +148,15 @@ Selleck considers any directory that contains both a <samp>doc.json</samp> file 
     </tr>
 
     <tr>
+      <td><samp>layout/</samp></td>
+      <td>
+        <p>
+          <i>Optional</i>. Directory containing layouts. A layout is a template that will be wrapped around other pages. A layout named <samp>main.mustache</samp> will be used for all pages, while a layout named <samp>component.mustache</samp> will be used for components (components will fall back to <samp>main.mustache</samp> if <samp>component.mustache</samp> is not found). Inside a layout, the tag <code>&#123;{>layout_content}}</code> will be replaced with page content.
+        </p>
+      </td>
+    </tr>
+
+    <tr>
       <td><samp>partial/</samp></td>
       <td>
         <p>
@@ -115,17 +166,17 @@ Selleck considers any directory that contains both a <samp>doc.json</samp> file 
     </tr>
 
     <tr>
-      <td><samp>doc.json</samp></td>
+      <td><samp>component.json</samp></td>
       <td>
         <p>
-        <strong>Required.</strong> JSON file containing metadata which will be made available to documentation templates.
+        <strong>Required for components.</strong> JSON file containing metadata which will be made available to documentation templates.
         </p>
         
         <p>
-        The metadata is freeform, but must contain at least a <code>name</code> property which contains the name of the component. This name will be used as the name of the component's output directory, among other things. Here's a sample <samp>doc.json</samp> file:
+        The metadata is freeform, but must contain at least a <code>name</code> property which contains the name of the component. This name will be used as the name of the component's output directory, among other things. Here's a sample <samp>component.json</samp> file:
         </p>
 
-<pre class="prettyprint">
+<pre>
 {
   "name": "my-component",
   "foo" : "arbitrary data",
@@ -135,6 +186,15 @@ Selleck considers any directory that contains both a <samp>doc.json</samp> file 
 
         <p>
         This component's Mustache templates can then include this data in the documentation using the Mustache tags <code>&#123;{name}}</code>, <code>&#123;{foo}}</code>, and <code>&#123;{bar}}</code>.
+        </p>
+      </td>
+    </tr>
+
+    <tr>
+      <td><samp>project.json</samp></td>
+      <td>
+        <p>
+        <strong>Required for projects</strong>. Works just like component metadata; the only difference is that the project metadata must contain a <code>projectName</code> property.
         </p>
       </td>
     </tr>
@@ -157,11 +217,7 @@ In addition to the files listed here, the documentation directory may contain an
 <h2 id="doc-templates">Documentation Templates</h2>
 
 <p>
-The <a href="http://mustache.github.com/mustache.5.html">Mustache Manual</a> describes the Mustache template language. If you haven't used Mustache before, you may want to read the manual before continuing.
-</p>
-
-<p>
-As mentioned above, doc templates can include any property from the <samp>doc.json</samp> metadata file by wrapping its name in <code>&#123;{mustaches}}</code>. In addition to this freeform metadata, Selleck also provides several predefined helper functions that templates can use to transform or wrap blocks of content.
+Documentation templates can include any property from the <samp>project.json</samp> or <samp>component.json</samp> metadata files by referring to it with a Mustache <code>&#123;{tag}}</code>. In addition to this freeform metadata, Selleck also provides several predefined helper functions that templates can use to transform or wrap blocks of content.
 </p>
 
 <h3 id="global-helpers">Global Helpers</h3>

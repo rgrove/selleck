@@ -3,54 +3,108 @@ var fs        = require('fs'),
     mustache  = require('mustache'),
 
     fileutils = require('./lib/fileutils'),
-    util      = require('./lib/util'); // Selleck util, not Node util.
+    util      = require('./lib/util'), // Selleck util, not Node util.
 
-exports.View          = require('./lib/view');
-exports.ComponentView = require('./lib/view/component');
+    View          = exports.View          = require('./lib/view'),
+    ComponentView = exports.ComponentView = require('./lib/view/component');
 
 /**
-@property defaultTemplate
+@property defaultTheme
 @type {String}
 **/
-exports.defaultTemplate = path.join(__dirname, 'template', 'default');
+exports.defaultTheme = path.join(__dirname, 'themes', 'default');
 
 /**
-@method findDocPaths
+@method copyAssets
+@param {String} inDir
+@param {String} outDir
+@param {bool} [deleteFirst=false]
+@callback
+  @param {Error} err
 **/
-function findDocPaths(root) {
-    var paths = [];
+function copyAssets() {
+    var args        = Array.prototype.slice.call(arguments),
+        callback    = args.pop(),
+        inDir       = args.shift(),
+        outDir      = args.shift(),
+        deleteFirst = args.shift(),
 
-    if (!fileutils.isDirectory(root)) {
-        log('Not a directory: ' + root, 'warning');
+        inAssets  = path.join(inDir, 'assets'),
+        outAssets = path.join(outDir, 'assets');
+
+    // If the input directory contains an "assets" subdirectory, copy it to the
+    // output directory.
+    if (fileutils.isDirectory(inAssets)) {
+        if (deleteFirst && fileutils.isDirectory(outAssets)) {
+            fileutils.deletePath(outAssets);
+        }
+
+        fileutils.copyPath(inAssets, outAssets, true, callback);
+    } else {
+        callback();
+    }
+}
+exports.copyAssets = copyAssets;
+
+/**
+@method createOutputDir
+**/
+function createOutputDir(outDir) {
+    var stats = fileutils.statSync(outDir);
+
+    if (stats) {
+        if (!stats.isDirectory()) {
+            throw new Error('Output path already exists and is not a directory: ' + outDir);
+        }
+    } else {
+        // TODO: mkdir -p
+        fs.mkdirSync(outDir, 0755);
+    }
+}
+exports.createOutputDir = createOutputDir;
+
+/**
+@method findDocs
+@return {Object}
+**/
+function findDocs(dir, docs) {
+    docs || (docs = {components: []});
+
+    if (!fileutils.isDirectory(dir)) {
+        log('Not a directory: ' + dir, 'error');
+        return docs;
     }
 
-    fs.readdirSync(root).forEach(function (filename) {
-        var filePath = path.join(root, filename);
-
-        // Skip hidden files and directories.
-        if (filename.indexOf('.') === 0) { return; }
-
-        if (fileutils.isDirectory(filePath)) {
-            if (isDocDirectory(filePath)) {
-                paths.push(filePath);
-            } else {
-                findDocPaths(filePath).forEach(function (p) {
-                    paths.push(p);
-                });
-            }
+    if (isComponentDirectory(dir)) {
+        docs.components.push({path: dir});
+    } else if (isProjectDirectory(dir)) {
+        if (docs.project) {
+            log('Multiple projects found; ignoring ' + dir, 'warn');
+        } else {
+            docs.project = {path: dir};
         }
-    });
+    } else {
+        fs.readdirSync(dir).forEach(function (filename) {
+            var filePath = path.join(dir, filename);
 
-    return paths;
+            // Skip hidden files and directories.
+            if (filename.indexOf('.') === 0) { return; }
+
+            if (fileutils.isDirectory(filePath)) {
+                findDocs(filePath, docs);
+            }
+        });
+    }
+
+    return docs;
 }
-exports.findDocPaths = findDocPaths;
+exports.findDocs = findDocs;
 
 /**
 @method generate
 **/
 function generate(inDir, outDir, options) {
-    var assetsDir = path.join(inDir, 'assets'),
-        outStats, pageName;
+    var pageName;
 
     if (options && options.skipLoad) {
         // Skip loading layouts, metadata, pages, and partials and assume that
@@ -71,7 +125,7 @@ function generate(inDir, outDir, options) {
         // from the input directory.
         options = util.merge(options || {}, {
             layouts  : getLayouts(inDir),
-            meta     : getMetadata(inDir),
+            meta     : getMetadata(inDir, options.component ? 'component' : 'project'),
             pages    : getPages(inDir),
             partials : getPartials(inDir)
         });
@@ -83,41 +137,25 @@ function generate(inDir, outDir, options) {
         return false;
     }
 
+    // Append meta.name to the output path if this is a component.
+    if (options.component) {
+        outDir = path.join(outDir, options.meta.name);
+    }
+
+    createOutputDir(outDir);
+    copyAssets(inDir, outDir, function () {});
+
     // Create a view instance if one wasn't provided in the options hash.
     if (!options.view) {
         if (options.component) {
             options.view = new exports.ComponentView(options.meta, {
-                layout: options.layouts.component
+                layout: options.layouts.component || options.layouts.main
             });
         } else {
             options.view = new exports.View(options.meta, {
                 layout: options.layouts.main
             });
         }
-    }
-
-    // Append meta.name to the output directory if this is a component.
-    if (options.component) {
-        outDir = path.join(outDir, options.meta.name);
-    }
-
-    outStats = fileutils.statSync(outDir);
-
-    // Create the output directory if it doesn't exist.
-    if (outStats) {
-        if (!outStats.isDirectory()) {
-            throw new Error('Output path already exists and is not a directory: ' + outDir);
-        }
-    } else {
-        // TODO: mkdir -p
-        fs.mkdirSync(outDir, 0755);
-    }
-
-    // If the input directory contains an "assets" subdirectory, copy it to the
-    // output directory. This is an async operation, but we don't really care
-    // when it finishes, so we don't wait for it.
-    if (fileutils.isDirectory(assetsDir)) {
-        fileutils.copyPath(assetsDir, path.join(outDir, 'assets'), true, function () {});
     }
 
     // Render each page to HTML and write it to the output directory.
@@ -133,8 +171,8 @@ exports.generate = generate;
 /**
 @method getMetadata
 **/
-function getMetadata(dir) {
-    var filePath = path.join(dir, 'doc.json'),
+function getMetadata(dir, type) {
+    var filePath = path.join(dir, type + '.json'),
         json, meta;
 
     if (fileutils.isFile(filePath)) {
@@ -217,22 +255,38 @@ function getPartials(dir) {
 exports.getPartials = getPartials;
 
 /**
-@method isDocDirectory
+@method isComponentDirectory
 **/
-function isDocDirectory(dir) {
-    var docStats,
-        indexStats;
+function isComponentDirectory(dir) {
+    var metaStats, indexStats;
 
     try {
-        docStats   = fs.statSync(path.join(dir, 'doc.json'));
+        metaStats  = fs.statSync(path.join(dir, 'component.json'));
         indexStats = fs.statSync(path.join(dir, 'index.mustache'));
     } catch (ex) {
         return false;
     }
 
-    return docStats.isFile() && indexStats.isFile();
+    return metaStats.isFile() && indexStats.isFile();
 }
-exports.isDocDirectory = isDocDirectory;
+exports.isComponentDirectory = isComponentDirectory;
+
+/**
+@method isProjectDirectory
+**/
+function isProjectDirectory(dir) {
+    var metaStats, indexStats;
+
+    try {
+        metaStats  = fs.statSync(path.join(dir, 'project.json'));
+        indexStats = fs.statSync(path.join(dir, 'index.mustache'));
+    } catch (ex) {
+        return false;
+    }
+
+    return metaStats.isFile() && indexStats.isFile();
+}
+exports.isProjectDirectory = isProjectDirectory;
 
 /**
 @method log

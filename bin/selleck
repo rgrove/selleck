@@ -1,45 +1,42 @@
 #!/usr/bin/env node
-var fs      = require('fs'),
-    path    = require('path'),
-
-    selleck   = require('selleck'),
+var selleck   = require('selleck'),
     fileutils = require('selleck/fileutils'),
     util      = require('selleck/util'), // selleck's util, not Node's util.
 
     arg,
-    args     = [], // leftover args after params are parsed out of argv
-    argv     = process.argv.slice(2), // get rid of the leading 'node' arg
-    docPaths = [],
-    log      = selleck.log,
+    args  = [], // leftover args after params are parsed out of argv
+    argv  = process.argv.slice(2), // get rid of the leading 'node' arg
+    docs  = {components: []},
+    log   = selleck.log,
 
     nextArg,
 
     // Default values for command line options.
     options  = {
-        out     : './docs',
-        template: selleck.defaultTemplate
+        out  : './docs',
+        theme: selleck.defaultTheme
     },
 
-    templateLayouts,
-    templateMeta,
-    templatePages,
-    templatePartials,
+    projectLayouts  = {},
+    projectMeta     = {},
+    projectPages    = {},
+    projectPartials = {},
+
+    themeLayouts = {},
 
     help = [
-        "Generates YUI user documentation, mustache-style.",
+        "Generates YUI user documentation, Mustache-style.",
         "",
-        "Usage: selleck [options] [path]",
+        "Usage: selleck [options] [input path]",
         "",
-        "Common Options:",
-        "  -o, --out <path>       Write generated files to this output path.",
-        "  -s, --server [port]    Run Selleck as a web server for real-time previews of",
-        "                         changes while editing docs.",
-        "  -t, --template <path>  Use the specified template instead of the default.",
-        "  -h, --help             Display this help message.",
-        "",
-        "Other Options:",
-        "  -O, --only <path>      Only generate docs from the specified directory, and",
-        "                         don't use a template."
+        "Options:",
+        "  -o, --out <path>      Write generated files to this output path.",
+        "  -p, --project <path>  Use the specified project path instead of searching for",
+        "                        the project.",
+        "  -s, --server [port]   Run Selleck as a web server for real-time previews of",
+        "                        changes while editing docs.",
+        "  -t, --theme <path>    Use the specified theme instead of the default.",
+        "  -h, --help            Display this help message.",
     ].join('\n');
 
 // Process command line parameters.
@@ -48,6 +45,7 @@ while ((arg = argv.shift())) {
     // on.
     if (arg.indexOf('-') !== 0) {
         args.push(arg);
+        continue;
     }
 
     switch (arg) {
@@ -57,20 +55,20 @@ while ((arg = argv.shift())) {
         process.exit();
         break;
 
-    case '--only':
-    case '-O':
-        if (options.template !== selleck.defaultTemplate) {
-            log("--only and --template can't be used together.", 'error');
-            process.exit(1);
-        }
-
-        options.template = options.only = argv.shift();
-        break;
-
     case '--output':
     case '--out':
     case '-o':
         options.out = argv.shift();
+        break;
+
+    case '--project':
+    case '-p':
+        options.project = docs.project = {path: argv.shift()};
+
+        if (!selleck.isProjectDirectory(docs.project.path)) {
+            log('Invalid project path: ' + docs.project.path, 'error');
+            process.exit(1);
+        }
         break;
 
     case '--server':
@@ -87,17 +85,19 @@ while ((arg = argv.shift())) {
         }
         break;
 
-    case '--template':
+    case '--theme':
     case '-t':
-        if (options.only) {
-            log("--only and --template can't be used together.", 'error');
-            process.exit(0);
-        }
-
-        options.template = argv.shift();
+        options.theme = argv.shift();
         break;
+
+    default:
+        log('Unrecognized parameter: ' + arg, 'error');
+        process.exit(1);
     }
 }
+
+// TODO: Theme assets need to be merged (at lowest priority) with project/component assets. Or maybe placed in a special "theme" directory.
+// TODO: Theme layouts need to be merged (at lowest priority) with project/component layouts.
 
 // First leftover arg (if any) is the root path; if no arg, then use the current
 // directory.
@@ -107,44 +107,53 @@ options.rootPath = args.shift() || process.cwd();
 if (options.server) {
     require('selleck/server')(options);
 } else {
-    if (!options.only) {
-        // Traverse the root path and look for directories containing a doc.json
-        // file and an index.mustache file. These will be treated as
-        // documentation directories and parsed.
-        docPaths = selleck.findDocPaths(options.rootPath);
-    }
+    selleck.createOutputDir(options.out);
 
-    // Load global template metadata, layouts, partials, and pages.
-    templateLayouts  = selleck.getLayouts(options.template);
-    templateMeta     = selleck.getMetadata(options.template);
-    templatePartials = selleck.getPartials(options.template);
-    templatePages    = selleck.getPages(options.template);
+    // Load theme layouts and copy theme assets to the output dir, if there are
+    // any.
+    themeLayouts = selleck.getLayouts(options.theme);
 
-    // Generate global docs.
-    log('Generating global docs', 'info');
-
-    selleck.generate(options.template, options.out, {
-        layouts  : templateLayouts,
-        meta     : templateMeta,
-        partials : templatePartials,
-        pages    : templatePages,
-        skipLoad : true, // Don't reload stuff from the input dir.
-        validator: globalValidator
+    selleck.copyAssets(options.theme, options.out, true, function (err) {
+        if (err) {
+            log(err.message, 'error');
+            process.exit(1);
+        }
     });
 
+    // Traverse the root path and look for documentation directories.
+    docs = selleck.findDocs(options.rootPath, docs);
+
+    if (docs.project) {
+        projectLayouts  = util.merge(themeLayouts, selleck.getLayouts(docs.project.path));
+        projectMeta     = selleck.getMetadata(docs.project.path, 'project');
+        projectPartials = selleck.getPartials(docs.project.path);
+        projectPages    = selleck.getPages(docs.project.path);
+
+        log('Generating project docs for ' + docs.project.path, 'info');
+
+        selleck.generate(docs.project.path, options.out, {
+            layouts  : projectLayouts,
+            meta     : projectMeta,
+            partials : projectPartials,
+            pages    : projectPages,
+            project  : true,
+            skipLoad : true, // Don't reload stuff from the input dir.
+            validator: projectValidator
+        });
+    }
+
     // Generate component docs.
-    docPaths.forEach(function(docPath) {
-        // If the docPath and the template path are the same thing, skip it.
-        if (docPath === options.template) { return; }
+    docs.components.forEach(function(component) {
+        var path = component.path;
 
-        log('Generating docs for ' + docPath, 'info');
+        log('Generating component docs for ' + path, 'info');
 
-        selleck.generate(docPath, options.out, {
+        selleck.generate(path, options.out, {
             component: true,
-            layouts  : templateLayouts,
-            meta     : templateMeta,
-            partials : templatePartials,
-            pages    : templatePages,
+            layouts  : projectLayouts,
+            meta     : projectMeta,
+            partials : projectPartials,
+            pages    : projectPages,
             validator: componentValidator
         });
     });
@@ -166,7 +175,7 @@ function componentValidator(data, docPath) {
     }
 }
 
-function globalValidator(data, docPath) {
+function projectValidator(data, docPath) {
     if (!data.meta.projectName) {
         log('Project name not specified: ' + docPath, 'error');
         process.exit(1);
