@@ -1,21 +1,21 @@
 /*
 Font sizes for all selectors other than the body are given in percentages,
-with 100% equal to 15px. To calculate a font size percentage, multiply the
-desired size in pixels by 6.666666667.
+with 100% equal to 13px. To calculate a font size percentage, multiply the
+desired size in pixels by 7.6923076923.
 
 Here's a quick lookup table:
 
-10px - 66.666%
-11px - 73.333%
-12px - 80%
-13px - 86.667%
-14px - 93.333%
-15px - 100%
-16px - 106.667%
-17px - 113.333%
-18px - 120%
-19px - 126.667%
-20px - 133.333%
+10px - 76.923%
+11px - 84.615%
+12px - 92.308%
+13px - 100%
+14px - 107.692%
+15px - 115.385%
+16px - 123.077%
+17px - 130.769%
+18px - 138.462%
+19px - 146.154%
+20px - 153.846%
 */
 
 html {
@@ -25,10 +25,25 @@ html {
 }
 
 body {
-    font: 15px/1.3 Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', 'Times New Roman', serif;
-    margin: 0 auto;
-    padding: 1em 1.5em;
-    max-width: 860px;
+    font: 13px/1.3 Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', 'Times New Roman', serif;
+    margin: 0;
+    padding: 0 0.5em;
+}
+
+#doc {
+    margin: auto;
+    width: 1024px;
+}
+
+#main { width: 754px; }
+
+#sidebar {
+    width: 270px;
+}
+
+.content {
+    font-size: 115.385%; /* 15px */
+    padding: 0 2em 0 1em;
 }
 
 a { text-decoration: none; }
@@ -37,9 +52,9 @@ a:hover { text-decoration: underline; }
 h1, h2, h3, h4, h5, h6 { line-height: 1.1; }
 
 h1 {
-    font-size: 240%; /* 36px */
+    font-size: 276.923%; /* 36px */
     line-height: 1.1;
-    margin-bottom: 0.9em;
+    margin: 0.6em 0 0.8em 5px;
     text-shadow: 1px 1px 2px #afafaf;
 }
 
@@ -127,22 +142,61 @@ th {
 }
 
 /* -- Lists ----------------------------------------------------------------- */
-.toc {
-    margin-left: 0;
-    padding-left: 20px;
-}
-
-.toc ol, .toc ul {
-    margin-left: 0;
-    padding-left: 30px;
-}
-
-.toc li { list-style-type: square; }
 .spaced li { margin: 0.8em 0; }
 
 dd { margin: 0.2em 0 0.7em 1em; }
 dl { margin: 1em 0; }
 dt { font-weight: bold; }
+
+/* -- Table of Contents ----------------------------------------------------- */
+
+/* The #toc id refers to the single global table of contents, while the .toc
+   class refers to generic TOC lists that could be used throughout the page. */
+
+#toc {
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    -moz-box-shadow: 0 0 3px #afafaf;
+    -webkit-box-shadow: 0 0 3px #afafaf;
+    box-shadow: 0 0 3px #afafaf;
+    font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', 'Helvetica', 'Arial', sans-serif;
+    margin: 0 20px 0 5px;
+    padding: 2px;
+}
+
+#toc h2 {
+    background: #efefef;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    font-size: 107.692%; /* 14px */
+    margin: 0;
+    padding: 2px 6px 3px;
+}
+
+#toc li {
+    font-size: 92.308%; /* 12px */
+    font-weight: bold;
+}
+#toc li li {
+    font-size: 100%;
+    font-weight: normal;
+}
+
+.toc code, .toc kbd, .toc samp { font-size: 100%; }
+
+.toc {
+    margin-left: 0;
+    padding-left: 22px;
+}
+
+.toc ol, .toc ul {
+    margin: 0;
+    padding-left: 16px;
+}
+
+.toc li { list-style-type: square; }
 
 /* -- Misc ------------------------------------------------------------------ */
 .intro {

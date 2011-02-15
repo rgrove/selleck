@@ -110,16 +110,17 @@ exports.findDocs = findDocs;
 @method generate
 **/
 function generate(inDir, outDir, options) {
-    var pageName;
+    var layout, pageName, view;
 
     if (options && options.skipLoad) {
         // Skip loading layouts, metadata, pages, and partials and assume that
         // the caller has provided them if they want them.
         options = util.merge({
-            layouts : {},
-            meta    : {},
-            pages   : {},
-            partials: {}
+            layouts  : {},
+            meta     : {},
+            pages    : {},
+            partials : {},
+            viewClass: options.component ? ComponentView : View
         }, options);
     } else {
         // Gather layouts, metadata, pages, and partials from the specified
@@ -129,11 +130,13 @@ function generate(inDir, outDir, options) {
         // order to support a use case where global data are provided by the
         // caller and overridden by more specific component-level data gathered
         // from the input directory.
-        options = util.merge(options || {}, {
-            layouts  : getLayouts(inDir),
-            meta     : getMetadata(inDir, options.component ? 'component' : 'project'),
-            pages    : getPages(inDir),
-            partials : getPartials(inDir)
+        options = util.merge({
+            viewClass: options.component ? ComponentView : View
+        }, options || {}, {
+            layouts : getLayouts(inDir),
+            meta    : getMetadata(inDir, options.component ? 'component' : 'project'),
+            pages   : getPages(inDir),
+            partials: getPartials(inDir)
         });
     }
 
@@ -151,23 +154,18 @@ function generate(inDir, outDir, options) {
     createOutputDir(outDir);
     copyAssets(inDir, outDir, function () {});
 
-    // Create a view instance if one wasn't provided in the options hash.
-    if (!options.view) {
-        if (options.component) {
-            options.view = new exports.ComponentView(options.meta, {
-                layout: options.layouts.component || options.layouts.main
-            });
-        } else {
-            options.view = new exports.View(options.meta, {
-                layout: options.layouts.main
-            });
-        }
+    if (options.component) {
+        layout = options.layouts.component || options.layouts.main;
+    } else {
+        layout = options.layouts.main;
     }
 
     // Render each page to HTML and write it to the output directory.
     for (pageName in options.pages) {
+        view = new options.viewClass(options.meta, {layout: layout});
+
         fs.writeFileSync(path.join(outDir, pageName + '.html'),
-                render(options.pages[pageName], options.view, options.partials));
+                render(options.pages[pageName], view, options.partials));
     }
 
     return true;
@@ -320,6 +318,47 @@ function render(content, view, partials) {
         mustache.to_html(content, view, partials || {}, sendFunction);
     }
 
-    return html.join('\n');
+    return renderTableOfContents(html.join('\n'), view._toc);
 }
 exports.render = render;
+
+/**
+@method renderTableOfContents
+**/
+function renderTableOfContents(html, headings) {
+    var listHtml;
+
+    // Nothing to do if html doesn't contain a TOC placeholder.
+    if (html.indexOf(View.TOC_PLACEHOLDER_TEXT) === -1) {
+        return html;
+    }
+
+    // Generate a list.
+    listHtml = renderTableOfContentsList(headings);
+
+    // Replace the placeholder text with the generated list.
+    return html.replace(View.TOC_PLACEHOLDER_TEXT, listHtml);
+}
+exports.renderTableOfContents = renderTableOfContents;
+
+// -- Private Functions --------------------------------------------------------
+function renderTableOfContentsList(heading) {
+    var listHtml = [];
+
+    listHtml.push('<ul class="toc">');
+
+    heading.headings.forEach(function (child) {
+        listHtml.push('<li>');
+        listHtml.push('<a href="#' + child.name + '">' + child.html + '</a>');
+
+        if (child.headings.length) {
+            listHtml.push(renderTableOfContentsList(child));
+        }
+
+        listHtml.push('</li>');
+    });
+
+    listHtml.push('</ul>');
+
+    return listHtml.join('\n');
+}

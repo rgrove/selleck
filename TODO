@@ -1,0 +1,9 @@
+* Mustache.js parses sections before it parses partials. Since Selleck's heading
+  sections rely on order of execution to determine position and nesting, this
+  means that heading sections in partials always come at the end of the table of
+  contents, regardless of the partial's document position. Need to figure out a
+  workaround.
+
+* Mustache.js strips a trailing space (after the {{/close}} tag) when replacing 
+  a section with its content. This is okay for blocks, but not cool for inline
+  sections. Workaround needed.
