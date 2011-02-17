@@ -79,6 +79,7 @@ while ((arg = argv.shift())) {
         break;
 
     case '--server':
+    case '--serve':
     case '-s':
         options.server = true;
 
