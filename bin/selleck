@@ -7,7 +7,8 @@ Licensed under the BSD License.
 
 var selleck   = require('selleck'),
     fileutils = require('selleck/fileutils'),
-    util      = require('selleck/util'), // selleck's util, not Node's util.
+    higgins   = require('selleck/higgins'),
+    util      = require('selleck/util'), // Selleck's util, not Node's util.
 
     arg,
     args  = [], // leftover args after params are parsed out of argv

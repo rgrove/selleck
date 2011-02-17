@@ -11,8 +11,9 @@ var fs        = require('fs'),
     fileutils = require('./lib/fileutils'),
     util      = require('./lib/util'), // Selleck util, not Node util.
 
-    View          = exports.View          = require('./lib/view'),
     ComponentView = exports.ComponentView = require('./lib/view/component');
+    Higgins       = exports.Higgins       = require('./lib/higgins'),
+    View          = exports.View          = require('./lib/view'),
 
 /**
 @property defaultTheme
@@ -318,47 +319,6 @@ function render(content, view, partials) {
         mustache.to_html(content, view, partials || {}, sendFunction);
     }
 
-    return renderTableOfContents(html.join('\n'), view._toc);
+    return Higgins.render(html.join('\n'));
 }
 exports.render = render;
-
-/**
-@method renderTableOfContents
-**/
-function renderTableOfContents(html, headings) {
-    var listHtml;
-
-    // Nothing to do if html doesn't contain a TOC placeholder.
-    if (html.indexOf(View.TOC_PLACEHOLDER_TEXT) === -1) {
-        return html;
-    }
-
-    // Generate a list.
-    listHtml = renderTableOfContentsList(headings);
-
-    // Replace the placeholder text with the generated list.
-    return html.replace(View.TOC_PLACEHOLDER_TEXT, listHtml);
-}
-exports.renderTableOfContents = renderTableOfContents;
-
-// -- Private Functions --------------------------------------------------------
-function renderTableOfContentsList(heading) {
-    var listHtml = [];
-
-    listHtml.push('<ul class="toc">');
-
-    heading.headings.forEach(function (child) {
-        listHtml.push('<li>');
-        listHtml.push('<a href="#' + child.name + '">' + child.html + '</a>');
-
-        if (child.headings.length) {
-            listHtml.push(renderTableOfContentsList(child));
-        }
-
-        listHtml.push('</li>');
-    });
-
-    listHtml.push('</ul>');
-
-    return listHtml.join('\n');
-}
