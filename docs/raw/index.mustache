@@ -1,29 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Selleck User Guide</title>
-    <link rel="stylesheet" href="assets/css/main.css">
-</head>
-<body>
-
-<h1>Selleck User Guide</h1>
-
+{{#intro}}
 <p>
-Selleck is a tool for generating user documentation from <a href="http://mustache.github.com/">Mustache</a>-based templates. It was created to generate documentation for the YUI Library.
+Selleck is a tool for generating user documentation from <a href="http://mustache.github.com/">Mustache</a>-based templates. It was created to generate documentation for the YUI Library. At the moment this document and Selleck itself are pretty YUI-specific, but over time Selleck will become a more generic tool, and the YUI-specific parts of the workflow (and this document) will be broken out.
 </p>
+{{/intro}}
 
-<p>
-At the moment this document and Selleck itself are pretty YUI-specific, but over time Selleck will become a more generic tool, and the YUI-specific parts of the workflow (and this document) will be broken out.
-</p>
-
-<h2 id="requirements">Requirements</h2>
+<h2>Requirements</h2>
 
 <p>
 Selleck requires <a href="http://nodejs.org/">Node.js</a> 0.3.7 or greater. It also requires a few third-party dependencies, but these will be installed automatically by npm.
 </p>
 
-<h2 id="installation">Installation</h2>
+<h2>Installation</h2>
 
 <p>
 For the moment, Selleck is only available from the internal git repo. To clone the repo and install Selleck, run the following commands:
@@ -35,7 +22,7 @@ $ cd selleck
 $ npm install .
 {{/terminal}}
 
-<h2 id="overview">Overview</h2>
+<h2>Overview</h2>
 
 <p>
 The <a href="http://mustache.github.com/mustache.5.html">Mustache Manual</a> describes the Mustache template language. If you haven't used Mustache before, you may want to read the manual before continuing.
@@ -74,10 +61,10 @@ Finally, projects and components may provide an <samp>assets/</samp> directory c
 </p>
 
 <p>
-See <a href="#docdirs">Documentation Directory Structure</a> for more details on the contents of project and component documentation directories.
+See [[#Directory Structure]] for more details on the contents of project and component documentation directories.
 </p>
 
-<h2 id="usage">Usage</h2>
+<h2>Usage</h2>
 
 <p>
 After installation, you'll have a new command line application named <kbd>selleck</kbd>. Run <kbd>selleck -h</kbd> for a summary of the options Selleck supports.
@@ -137,7 +124,7 @@ $ selleck ~/src/yui/yui3 --server
 [info] Selleck is now giving Ferrari rides at http://localhost:3000
 {{/terminal}}
 
-<h2 id="docdirs">Documentation Directory Structure</h2>
+<h2>Directory Structure</h2>
 
 <p>
 The following table describes the required and optional contents and structure of a project or component documentation directory.
@@ -228,13 +215,13 @@ The following table describes the required and optional contents and structure o
 In addition to the files listed here, the documentation directory may contain any number of <samp>.mustache</samp> files. These will be parsed and generated as <samp>.html</samp> files in the component's output directory.
 </p>
 
-<h2 id="doc-templates">Documentation Templates</h2>
+<h2>Documentation Templates</h2>
 
 <p>
 Documentation templates can include any property from the <samp>project.json</samp> or <samp>component.json</samp> metadata files by referring to it with a Mustache <code>&#123;{tag}}</code>. In addition to this freeform metadata, Selleck also provides several predefined helper functions that templates can use to transform or wrap blocks of content.
 </p>
 
-<h3 id="global-helpers">Global Helpers</h3>
+<h3>Global Helpers</h3>
 
 <p>
 Global helpers can be used in any Selleck template, whether at the global project-wide template level or at the component level.
@@ -246,7 +233,6 @@ Global helpers can be used in any Selleck template, whether at the global projec
       <th>Name</th>
       <th>Type</th>
       <th>Description</th>
-      <th>Example</th>
     </tr>
   </thead>
 
@@ -258,8 +244,7 @@ Global helpers can be used in any Selleck template, whether at the global projec
         <p>
         Escapes HTML characters in the given content and wraps it in a syntax-highlighted <code>&lt;pre&gt;</code> block.
         </p>
-      </td>
-      <td>
+
 <pre>
 &#123;{#code}}
 YUI().use('example', function () {
@@ -277,8 +262,8 @@ YUI().use('example', function () {
       <td>
         <p>
         Similar to <code>code</code>, but for commands that should be entered into a terminal. Shell prompts (<code>$</code> or <code>#</code>) at the beginnings of lines will be made non-selectable to make copying and pasting easier.
-      </td>
-      <td>
+        </p>
+
 <pre>
 &#123;{#terminal}}
 $ cd /foo
@@ -290,7 +275,7 @@ $ make install clean
   </tbody>
 </table>
 
-<h3 id="component-helpers">Component Helpers</h3>
+<h3>Component Helpers</h3>
 
 <p>
 Component helpers can be used in component templates, but not in global templates.
@@ -302,7 +287,6 @@ Component helpers can be used in component templates, but not in global template
       <th>Name</th>
       <th>Type</th>
       <th>Description</th>
-      <th>Example</th>
     </tr>
   </thead>
 
@@ -311,9 +295,10 @@ Component helpers can be used in component templates, but not in global template
       <td><code>intro</code></td>
       <td>Section</td>
       <td>
+        <p>
         Wraps the given section content in an intro <code>&lt;div&gt;</code>. Used for the introductory description at the top of a component's documentation page.
-      </td>
-      <td>
+        </p>
+
 <pre>
 &#123;{#intro}}
 &lt;p&gt;
@@ -330,8 +315,7 @@ This is some intro content for a component.
         <p>
         Page title for this component: a concatenation of the global <code>projectName</code> metadata property with the component's <code>name</code> metadata property.
         </p>
-      </td>
-      <td>
+
         <pre>&#123;{title}}</pre>
       </td>
     </tr>
@@ -343,19 +327,15 @@ This is some intro content for a component.
         <p>
         Module name parameters for a YUI 3 <code>use()</code> statement, built from the value of the <code>use</code> property in the component's metadata.
         </p>
-      </td>
-      <td>
+
         <pre>&#123;{useParams}}</pre>
       </td>
     </tr>
   </tbody>
 </table>
 
-<h2 id="other">Other Stuff</h2>
+<h2>Other Stuff</h2>
 
 <p>
 Selleck isn't finished yet, and there's still more to document here. For now, poke around the default template and some of the component doc directories in the YUI 3 source tree to see what's possible.
 </p>
-
-</body>
-</html>
