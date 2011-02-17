@@ -4,14 +4,25 @@
     <meta charset="utf-8">
     <title>{{title}}</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.3.0/build/cssgrids/grids-min.css">
-    <link rel="stylesheet" href="../assets/css/main.css">
-    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/vendor/prettify/prettify-min.css">
 </head>
 <body>
 
-<div id="doc" class="yui3-g">
-    <div id="main" class="yui3-u">
-        <div class="content">{{>layout_content}}</div>
+<div id="doc">
+    <h1>{{title}}</h1>
+
+    <div class="yui3-g">
+        <div id="main" class="yui3-u">
+            <div class="content">{{>layout_content}}</div>
+        </div>
+
+        <div id="sidebar" class="yui3-u">
+            <div id="toc">
+                <h2 class="no-toc">Table of Contents</h2>
+                {{toc}}
+            </div>
+        </div>
     </div>
 </div>
 
