@@ -1,8 +1,8 @@
-{{#intro}}
+<div class="intro">
 <p>
 Selleck is a tool for generating user documentation from <a href="http://mustache.github.com/">Mustache</a>-based templates. It was created to generate documentation for the YUI Library. At the moment this document and Selleck itself are pretty YUI-specific, but over time Selleck will become a more generic tool, and the YUI-specific parts of the workflow (and this document) will be broken out.
 </p>
-{{/intro}}
+</div>
 
 <h2>Requirements</h2>
 
@@ -16,11 +16,11 @@ Selleck requires <a href="http://nodejs.org/">Node.js</a> 0.3.7 or greater. It a
 For the moment, Selleck is only available from the internal git repo. To clone the repo and install Selleck, run the following commands:
 </p>
 
-{{#terminal}}
+```terminal
 $ git clone git@yuisource.corp.yahoo.com:selleck
 $ cd selleck
 $ npm install .
-{{/terminal}}
+```
 
 <h2>Overview</h2>
 
@@ -74,55 +74,55 @@ After installation, you'll have a new command line application named <kbd>sellec
 If no options are given, Selleck will search the current directory and all its subdirectories recursively, looking for documentation directories (it does this by searching for <samp>project.json</samp> and <samp>component.json</samp> files). It will generate HTML documentation from all the doc directories it finds, and will write the generated docs to <samp>./docs</samp> by default.
 </p>
 
-{{#terminal}}
+```terminal
 $ cd ~/src/yui/yui3
 $ selleck
 [info] Generating project docs for /Users/rgrove/src/yui/yui3/src/common/docs
 [info] Generating component docs for /Users/rgrove/src/yui/yui3/src/autocomplete/docs
 [info] Generating component docs for /Users/rgrove/src/yui/yui3/src/history/docs
 [info] Done! Docs were written to: ./docs
-{{/terminal}}
+```
 
 <p>
 To generate documentation from a directory other than the current directory, pass the directory as an argument.
 </p>
 
-{{#terminal}}
+```terminal
 $ selleck ~/src/yui/yui3
-{{/terminal}}
+```
 
 <p>
 You may also optionally specify an output directory for the generated docs.
 </p>
 
-{{#terminal}}
+```terminal
 $ selleck ~/src/yui/yui3 --out ~/src/yui/yui3/docs
-{{/terminal}}
+```
 
 <p>
 To specify a documentation theme other than Selleck's default theme, use the <kbd>--theme</kbd> option/
 </p>
 
-{{#terminal}}
+```terminal
 $ selleck ~/src/yui/yui3 --theme /path/to/theme
-{{/terminal}}
+```
 
 <p>
 To generate documentation for an explicit project rather than searching for the project, use the <samp>--project</samp> option.
 </p>
 
-{{#terminal}}
+```terminal
 $ selleck --project /path/to/project
-{{/terminal}}
+```
 
 <p>
 Finally, the <samp>--server</samp> option will start a web server that you can use to preview your documentation in real time as you make changes, so that you don't need to regenerate after every change. It can be used in combination with any of the other options.
 </p>
 
-{{#terminal}}
+```terminal
 $ selleck ~/src/yui/yui3 --server
 [info] Selleck is now giving Ferrari rides at http://localhost:3000
-{{/terminal}}
+```
 
 <h2>Directory Structure</h2>
 

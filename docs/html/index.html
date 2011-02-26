@@ -14,10 +14,12 @@
 
     <div class="yui3-g">
         <div id="main" class="yui3-u">
-            <div class="content"><div class="intro"><p>
+            <div class="content"><div class="intro">
+<p>
 Selleck is a tool for generating user documentation from <a href="http://mustache.github.com/">Mustache</a>-based templates. It was created to generate documentation for the YUI Library. At the moment this document and Selleck itself are pretty YUI-specific, but over time Selleck will become a more generic tool, and the YUI-specific parts of the workflow (and this document) will be broken out.
 </p>
 </div>
+
 <h2 id="requirements">Requirements</h2>
 
 <p>
@@ -32,8 +34,9 @@ For the moment, Selleck is only available from the internal git repo. To clone t
 
 <pre class="terminal"><span class="noselect">$ </span>git clone git@yuisource.corp.yahoo.com:selleck
 <span class="noselect">$ </span>cd selleck
-<span class="noselect">$ </span>npm install .
-</pre>
+<span class="noselect">$ </span>npm install .</pre>
+
+
 <h2 id="overview">Overview</h2>
 
 <p>
@@ -91,39 +94,45 @@ If no options are given, Selleck will search the current directory and all its s
 [info] Generating project docs for &#x2F;Users&#x2F;rgrove&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;src&#x2F;common&#x2F;docs
 [info] Generating component docs for &#x2F;Users&#x2F;rgrove&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;src&#x2F;autocomplete&#x2F;docs
 [info] Generating component docs for &#x2F;Users&#x2F;rgrove&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;src&#x2F;history&#x2F;docs
-[info] Done! Docs were written to: .&#x2F;docs
-</pre>
+[info] Done! Docs were written to: .&#x2F;docs</pre>
+
+
 <p>
 To generate documentation from a directory other than the current directory, pass the directory as an argument.
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3
-</pre>
+<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3</pre>
+
+
 <p>
 You may also optionally specify an output directory for the generated docs.
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --out ~&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;docs
-</pre>
+<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --out ~&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;docs</pre>
+
+
 <p>
 To specify a documentation theme other than Selleck's default theme, use the <kbd>--theme</kbd> option/
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --theme &#x2F;path&#x2F;to&#x2F;theme
-</pre>
+<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --theme &#x2F;path&#x2F;to&#x2F;theme</pre>
+
+
 <p>
 To generate documentation for an explicit project rather than searching for the project, use the <samp>--project</samp> option.
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>selleck --project &#x2F;path&#x2F;to&#x2F;project
-</pre>
+<pre class="terminal"><span class="noselect">$ </span>selleck --project &#x2F;path&#x2F;to&#x2F;project</pre>
+
+
 <p>
 Finally, the <samp>--server</samp> option will start a web server that you can use to preview your documentation in real time as you make changes, so that you don't need to regenerate after every change. It can be used in combination with any of the other options.
 </p>
 
 <pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --server
-[info] Selleck is now giving Ferrari rides at http:&#x2F;&#x2F;localhost:3000
-</pre>
+[info] Selleck is now giving Ferrari rides at http:&#x2F;&#x2F;localhost:3000</pre>
+
+
 <h2 id="directory-structure">Directory Structure</h2>
 
 <p>

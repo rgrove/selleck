@@ -9,17 +9,23 @@ var fs        = require('fs'),
     mustache  = require('mustache'),
 
     fileutils = require('./lib/fileutils'),
-    util      = require('./lib/util'), // Selleck util, not Node util.
+    util      = require('./lib/util'), // Selleck's util, not Node's util.
 
-    ComponentView = exports.ComponentView = require('./lib/view/component');
+    ComponentView = exports.ComponentView = require('./lib/view/component'),
     Higgins       = exports.Higgins       = require('./lib/higgins'),
-    View          = exports.View          = require('./lib/view'),
+    View          = exports.View          = require('./lib/view');
+
+// -- Public Properties --------------------------------------------------------
 
 /**
+Path to the default theme directory.
+
 @property defaultTheme
 @type {String}
 **/
 exports.defaultTheme = path.join(__dirname, 'themes', 'default');
+
+// -- Public Functions ---------------------------------------------------------
 
 /**
 @method copyAssets
@@ -110,66 +116,22 @@ exports.findDocs = findDocs;
 /**
 @method generate
 **/
-function generate(inDir, outDir, options) {
-    var layout, pageName, view;
+function generate(inDir, outDir, options, callback) {
+    prepare(inDir, options, function (err, options) {
+        if (err) { return callback(err); }
 
-    if (options && options.skipLoad) {
-        // Skip loading layouts, metadata, pages, and partials and assume that
-        // the caller has provided them if they want them.
-        options = util.merge({
-            layouts  : {},
-            meta     : {},
-            pages    : {},
-            partials : {},
-            viewClass: options.component ? ComponentView : View
-        }, options);
-    } else {
-        // Gather layouts, metadata, pages, and partials from the specified
-        // input directory, then merge them into the provided options (if any).
-        //
-        // Gathered data will override provided data if there are conflicts, in
-        // order to support a use case where global data are provided by the
-        // caller and overridden by more specific component-level data gathered
-        // from the input directory.
-        options = util.merge({
-            viewClass: options.component ? ComponentView : View
-        }, options || {}, {
-            layouts : getLayouts(inDir),
-            meta    : getMetadata(inDir, options.component ? 'component' : 'project'),
-            pages   : getPages(inDir),
-            partials: getPartials(inDir)
+        // Append meta.name to the output path if this is a component.
+        if (options.component) {
+            outDir = path.join(outDir, options.meta.name);
+        }
+
+        createOutputDir(outDir);
+
+        copyAssets(inDir, outDir, function (err) {
+            if (err) { return callback(err); }
+            writePages(outDir, options, callback);
         });
-    }
-
-    // If a validator function was provided, run it, and skip the generation
-    // step if it returns false.
-    if (options.validator && options.validator(options, inDir) === false) {
-        return false;
-    }
-
-    // Append meta.name to the output path if this is a component.
-    if (options.component) {
-        outDir = path.join(outDir, options.meta.name);
-    }
-
-    createOutputDir(outDir);
-    copyAssets(inDir, outDir, function () {});
-
-    if (options.component) {
-        layout = options.layouts.component || options.layouts.main;
-    } else {
-        layout = options.layouts.main;
-    }
-
-    // Render each page to HTML and write it to the output directory.
-    for (pageName in options.pages) {
-        view = new options.viewClass(options.meta, {layout: layout});
-
-        fs.writeFileSync(path.join(outDir, pageName + '.html'),
-                render(options.pages[pageName], view, options.partials));
-    }
-
-    return true;
+    });
 }
 exports.generate = generate;
 
@@ -203,7 +165,7 @@ of the specified _dir_.
 @return {Object} Mapping of layout names to layout content.
 **/
 function getLayouts(dir) {
-    return getPages(path.join(dir, 'layout'));
+    return getPages(path.join(dir, 'layouts'));
 }
 exports.getLayouts = getLayouts;
 
@@ -255,7 +217,7 @@ of the specified _dir_.
 @return {Object} Mapping of partial names to partial content.
 **/
 function getPartials(dir) {
-    return getPages(path.join(dir, 'partial'));
+    return getPages(path.join(dir, 'partials'));
 }
 exports.getPartials = getPartials;
 
@@ -302,23 +264,123 @@ function log(message, level) {
 exports.log = log;
 
 /**
-@method render
+@method prepare
+@param {String} inDir
+@param {Object} options
+@param {callback}
+  @param {Error} err
+  @param {Object} options Merged options.
 **/
-function render(content, view, partials) {
+function prepare(inDir, options, callback) {
+    var compiled = {},
+        type     = options.component ? 'component' : 'project';
+
+    if (options && options.skipLoad) {
+        // Skip loading layouts, metadata, pages, and partials and assume that
+        // the caller has provided them if they want them.
+        options = util.merge({
+            layouts  : {},
+            meta     : {},
+            pages    : {},
+            partials : {},
+            viewClass: options.component ? ComponentView : View
+        }, options);
+    } else {
+        // Gather layouts, metadata, pages, and partials from the specified
+        // input directory, then merge them into the provided options (if any).
+        //
+        // Gathered data will override provided data if there are conflicts, in
+        // order to support a use case where global data are provided by the
+        // caller and overridden by more specific component-level data gathered
+        // from the input directory.
+        options = util.merge({
+            viewClass: options.component ? ComponentView : View
+        }, options || {}, {
+            layouts : getLayouts(inDir),
+            meta    : getMetadata(inDir, type),
+            pages   : getPages(inDir),
+            partials: getPartials(inDir)
+        });
+    }
+
+    // If a validator function was provided, run it.
+    if (options.validator && options.validator(options, inDir) === false) {
+        return callback(new Error('Validation failed.')); // TODO: get the error from the validator itself
+    }
+
+    if (!options.meta.layout) {
+        options.meta.layout = options.layouts[type];
+    }
+
+    callback(null, options);
+}
+exports.prepare = prepare;
+
+/**
+Renders the specified template source.
+
+@method render
+@param {String} source Template source to render.
+@param {Object} context Context object.
+@param {Object} [partials] Partials object.
+@param {callback}
+  @param {Error} err
+  @param {String} html Rendered HTML.
+**/
+function render(source, context, partials, callback) {
     var html = [];
 
-    function sendFunction(line) {
+    function buffer(line) {
         html.push(line);
     }
 
-    if (view.layout) {
-        mustache.to_html(view.layout, view,
-                util.merge(partials || {}, {layout_content: content}),
-                sendFunction);
-    } else {
-        mustache.to_html(content, view, partials || {}, sendFunction);
+    // Allow callback as third param.
+    if (typeof partials === 'function') {
+        callback = partials;
+        partials = {};
     }
 
-    return Higgins.render(html.join('\n'));
+    try {
+        if (context.layout) {
+            mustache.to_html(context.layout, context, util.merge(
+                partials || {},
+                {layout_content: source}
+            ), buffer);
+        } else {
+            mustache.to_html(source, context, partials || {}, buffer);
+        }
+    } catch (ex) {
+        return callback(ex);
+    }
+
+    callback(null, Higgins.render(html.join('\n')));
 }
 exports.render = render;
+
+/**
+@method writePages
+**/
+function writePages(outDir, options, callback) {
+    var toWrite = util.size(options.pages);
+
+    if (!toWrite) { return callback(); }
+
+    // Render each page to HTML and write it to the output directory.
+    util.each(options.pages, function (source, name) {
+        var view = new options.viewClass(options.meta);
+
+        render(source, view, options.partials, function (err, html) {
+            if (err) { return callback(err); }
+            fs.writeFile(path.join(outDir, name + '.html'), html, 'utf8', finish);
+        });
+    });
+
+    function finish(err) {
+        if (err) { return callback(err); }
+
+        if (!(toWrite -= 1)) {
+            callback();
+        }
+    }
+}
+exports.writePages = writePages;

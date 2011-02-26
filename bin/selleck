@@ -6,9 +6,9 @@ Licensed under the BSD License.
 */
 
 var selleck   = require('selleck'),
-    fileutils = require('selleck/fileutils'),
-    higgins   = require('selleck/higgins'),
-    util      = require('selleck/util'), // Selleck's util, not Node's util.
+    fileutils = require('selleck/lib/fileutils'),
+    higgins   = require('selleck/lib/higgins'),
+    util      = require('selleck/lib/util'), // Selleck's util, not Node's util.
 
     arg,
     args  = [], // leftover args after params are parsed out of argv
@@ -29,7 +29,8 @@ var selleck   = require('selleck'),
     projectPages    = {},
     projectPartials = {},
 
-    themeLayouts = {},
+    themeLayouts  = {},
+    themePartials = {},
 
     help = [
         "Generates YUI user documentation, Mustache-style.",
@@ -43,7 +44,7 @@ var selleck   = require('selleck'),
         "  -s, --server [port]   Run Selleck as a web server for real-time previews of",
         "                        changes while editing docs.",
         "  -t, --theme <path>    Use the specified theme instead of the default.",
-        "  -h, --help            Display this help message.",
+        "  -h, --help            Display this help message."
     ].join('\n');
 
 // Process command line parameters.
@@ -104,22 +105,20 @@ while ((arg = argv.shift())) {
     }
 }
 
-// TODO: Theme assets need to be merged (at lowest priority) with project/component assets. Or maybe placed in a special "theme" directory.
-// TODO: Theme layouts need to be merged (at lowest priority) with project/component layouts.
-
 // First leftover arg (if any) is the root path; if no arg, then use the current
 // directory.
 options.rootPath = args.shift() || process.cwd();
 
 // If running as a server, start the server instead of continuing.
 if (options.server) {
-    require('selleck/server')(options);
+    require('selleck/lib/server')(options);
 } else {
     selleck.createOutputDir(options.out);
 
-    // Load theme layouts and copy theme assets to the output dir, if there are
-    // any.
-    themeLayouts = selleck.getLayouts(options.theme);
+    // Load theme layouts and partials, and copy theme assets to the output dir,
+    // if there are any.
+    themeLayouts  = selleck.getLayouts(options.theme);
+    themePartials = selleck.getPartials(options.theme);
 
     selleck.copyAssets(options.theme, options.out, true, function (err) {
         if (err) {
@@ -134,7 +133,7 @@ if (options.server) {
     if (docs.project) {
         projectLayouts  = util.merge(themeLayouts, selleck.getLayouts(docs.project.path));
         projectMeta     = selleck.getMetadata(docs.project.path, 'project');
-        projectPartials = selleck.getPartials(docs.project.path);
+        projectPartials = util.merge(themePartials, selleck.getPartials(docs.project.path));
         projectPages    = selleck.getPages(docs.project.path);
 
         log('Generating project docs for ' + docs.project.path, 'info');
@@ -147,26 +146,51 @@ if (options.server) {
             project  : true,
             skipLoad : true, // Don't reload stuff from the input dir.
             validator: projectValidator
-        });
+        }, generateComponents);
+    } else {
+        generateComponents();
     }
 
-    // Generate component docs.
-    docs.components.forEach(function(component) {
-        var path = component.path;
+    function generateComponents(err) {
+        if (err) { return finish(err); }
 
-        log('Generating component docs for ' + path, 'info');
+        var toGenerate = docs.components.length;
+        if (!toGenerate) { return finish(); }
 
-        selleck.generate(path, options.out, {
-            component: true,
-            layouts  : projectLayouts,
-            meta     : projectMeta,
-            partials : projectPartials,
-            pages    : projectPages,
-            validator: componentValidator
+        // Generate component docs.
+        docs.components.forEach(function(component) {
+            var path = component.path;
+
+            log('Generating component docs for ' + path, 'info');
+
+            selleck.generate(path, options.out, {
+                component: true,
+                layouts  : projectLayouts,
+                meta     : projectMeta,
+                partials : projectPartials,
+                pages    : projectPages,
+                validator: componentValidator
+            }, finishComponent);
         });
-    });
 
-    log('Done! Docs were written to: ' + options.out, 'info');
+        function finishComponent(err) {
+            if (err) { return finish(err); }
+
+            toGenerate -= 1;
+
+            if (toGenerate === 0) {
+                finish();
+            }
+        }
+    }
+
+    function finish(err) {
+        if (err) {
+            log(err, 'error');
+        } else {
+            log('Done! Docs were written to: ' + options.out, 'info');
+        }
+    }
 }
 
 // -- Functions ----------------------------------------------------------------
