@@ -309,7 +309,7 @@ function prepare(inDir, options, callback) {
     }
 
     if (!options.meta.layout) {
-        options.meta.layout = options.layouts[type];
+        options.meta.layout = options.layouts[type] || options.layouts.main;
     }
 
     callback(null, options);
