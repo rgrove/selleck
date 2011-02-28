@@ -25,9 +25,9 @@ html {
 }
 
 body {
-    font: 13px/1.3 Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', 'Times New Roman', serif;
+    font: 13px/1.3 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'DejaVu Sans', 'Bitstream Vera Sans', sans-serif;
     margin: 0;
-    padding: 0 0.5em;
+    padding: 0;
 }
 
 #doc {
@@ -36,14 +36,11 @@ body {
 }
 
 #main { width: 754px; }
-
-#sidebar {
-    width: 270px;
-}
+#sidebar { width: 270px; }
 
 .content {
-    font-size: 115.385%; /* 15px */
-    padding: 0 2em 0 1em;
+    font-size: 107.692%;
+    padding: 0 30px 0 25px;
 }
 
 a { text-decoration: none; }
@@ -52,20 +49,23 @@ a:hover { text-decoration: underline; }
 h1, h2, h3, h4, h5, h6 { line-height: 1.1; }
 
 h1 {
+    font-family: Georgia, 'DejaVu Serif', 'Bitstream Vera Serif', 'Times New Roman', serif;
     font-size: 276.923%; /* 36px */
+    font-weight: bold;
     line-height: 1.1;
-    margin: 0.6em 0 0.8em 5px;
-    text-shadow: 1px 1px 2px #afafaf;
+    margin: 0.6em 0 0.8em 25px;
+    text-shadow: 1px 1px 2px #bfbfbf;
 }
 
 h2 {
-    font-size: 140%; /* 21px */
-    margin-top: 1.3em;
+    font-size: 153.846%;
+    margin-top: 1.2em;
 }
 
-h3, h4, h5, h6 { margin: 1.6em 0 1em; }
-h3 { font-size: 120%; } /* 18px */
-h4, h5, h6 { font-size: 100%; } /* 15px */
+h3, h4, h5, h6 { margin: 1.4em 0 1em; }
+h3 { font-size: 138.462%; }
+h4 { font-size: 123.077%; }
+h5, h6 { font-size: 100%; }
 
 p { margin: 1.1em 0; }
 dd p, td p { margin-bottom: 0; }
@@ -74,11 +74,9 @@ dd p:first-child, td p:first-child { margin-top: 0; }
 /* -- Code and examples ----------------------------------------------------- */
 code, kbd, pre, samp {
     font-family: Menlo, 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Consolas', 'Monaco', fixed;
-    font-size: 86.667%; /* 13px */
+    font-size: 92.308%;
     line-height: 1.35;
 }
-
-p code, p kbd, p samp { color: #555; }
 
 pre.code, pre.terminal {
     overflow-x: auto;
@@ -86,9 +84,9 @@ pre.code, pre.terminal {
 }
 
 pre.code {
-    background: #f5f5f5;
-    border: 1px solid #ededed;
-    border-left: 5px solid #dfdfdf;
+    background: #f8f8f8;
+    border: 1px solid #ececec;
+    border-left: 5px solid #e2e2e2;
 }
 
 pre.terminal {
@@ -99,10 +97,7 @@ pre.terminal {
 
 /* Don't reduce the font size of <code>/<kbd>/<samp> elements inside <pre>
    blocks. */
-pre code, pre kbd, pre samp {
-    color: #333;
-    font-size: 100%;
-}
+pre code, pre kbd, pre samp { font-size: 100%; }
 
 /* Used to denote text that shouldn't be selectable, such as line numbers or
    shell prompts. Guess which browser this doesn't work in. */
@@ -136,8 +131,9 @@ td pre:first-child { margin-top: 0; }
 th {
     background: #6C8EA1;
     color: #fff;
-    /* 14px/18px */
-    font: bold 93.333%/126.667% 'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, sans-serif;
+    font-size: 92.308%;
+    font-weight: bold;
+    line-height: 1.2;
     text-transform: uppercase;
 }
 
@@ -148,12 +144,8 @@ dd { margin: 0.2em 0 0.7em 1em; }
 dl { margin: 1em 0; }
 dt { font-weight: bold; }
 
-/* -- Table of Contents ----------------------------------------------------- */
-
-/* The #toc id refers to the single global table of contents, while the .toc
-   class refers to generic TOC lists that could be used throughout the page. */
-
-#toc {
+/* -- Sidebar --------------------------------------------------------------- */
+.sidebox {
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     border-radius: 4px;
@@ -161,49 +153,63 @@ dt { font-weight: bold; }
     -webkit-box-shadow: 0 0 3px #afafaf;
     box-shadow: 0 0 3px #afafaf;
     font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', 'Helvetica', 'Arial', sans-serif;
-    margin: 0 20px 0 5px;
+    margin: 0 20px 15px 5px;
     padding: 2px;
 }
 
-#toc h2 {
+.sidebox h2 {
     background: #efefef;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     border-radius: 4px;
-    font-size: 107.692%; /* 14px */
+    font-size: 107.692%;
     margin: 0;
     padding: 2px 6px 3px;
 }
 
-#toc li {
-    font-size: 92.308%; /* 12px */
-    font-weight: bold;
-}
-#toc li li {
-    font-size: 100%;
-    font-weight: normal;
-}
+.sidebox .bd { font-size: 92.308%; }
+.sidebox li { list-style-type: square; }
 
-.toc code, .toc kbd, .toc samp { font-size: 100%; }
-
-.toc {
+.sidebox ol, .sidebox ul {
     margin-left: 0;
-    padding-left: 22px;
+    padding-left: 24px;
 }
 
-.toc ol, .toc ul {
+.sidebox ol ol, .sidebox ol ul,
+.sidebox ul ol, .sidebox ul ul {
     margin: 0;
     padding-left: 16px;
 }
 
-.toc li { list-style-type: square; }
+/* -- Table of Contents ----------------------------------------------------- */
 
-/* -- Misc ------------------------------------------------------------------ */
-.intro {
-    background: #E2EEFB;
-    border: 1px solid #BDD6F4;
+/* The #toc id refers to the single global table of contents, while the .toc
+   class refers to generic TOC lists that could be used throughout the page. */
+
+.toc code, .toc kbd, .toc samp { font-size: 100%; }
+
+.toc li { font-weight: bold; }
+.toc li li { font-weight: normal; }
+
+/* -- Intro and Example Boxes ----------------------------------------------- */
+.intro, .example {
     margin-bottom: 2em;
     margin-left: -1em; /* to preserve text alignment and improve readability */
     margin-right: -1em;
+}
+
+.example {
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    -moz-box-shadow: 0 0 5px #bfbfbf;
+    -webkit-box-shadow: 0 0 5px #bfbfbf;
+    box-shadow: 0 0 5px #bfbfbf;
+    padding: 1em;
+}
+
+.intro {
+    background: #E2EEFB;
+    border: 1px solid #BDD6F4;
     padding: 0em 1em;
 }

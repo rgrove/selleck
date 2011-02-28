@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>{{title}}</title>
+    <title>{{htmlTitle}}</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.3.0/build/cssgrids/grids-min.css">
     <link rel="stylesheet" href="../assets/css/main.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <script src="http://yui.yahooapis.com/combo?3.3.0/build/yui/yui-min.js&amp;3.3.0/build/loader/loader-min.js"></script>
 </head>
 <body>
 
@@ -18,10 +19,33 @@
         </div>
 
         <div id="sidebar" class="yui3-u">
-            <div id="toc">
-                <h2 class="no-toc">Table of Contents</h2>
-                {{toc}}
-            </div>
+            {{^hideTableOfContents}}
+                <div id="toc" class="sidebox">
+                    <div class="hd">
+                        <h2 class="no-toc">Table of Contents</h2>
+                    </div>
+
+                    <div class="bd">
+                        {{toc}}
+                    </div>
+                </div>
+            {{/hideTableOfContents}}
+
+            {{#hasExamples}}
+                <div class="sidebox">
+                    <div class="hd">
+                        <h2 class="no-toc">Examples</h2>
+                    </div>
+
+                    <div class="bd">
+                        <ul class="examples">
+                            {{#examples}}
+                                <li data-description="{{description}}"><a href="{{name}}.html">{{displayName}}</a></li>
+                            {{/examples}}
+                        </ul>
+                    </div>
+                </div>
+            {{/hasExamples}}
         </div>
     </div>
 </div>

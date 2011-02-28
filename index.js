@@ -367,7 +367,7 @@ function writePages(outDir, options, callback) {
 
     // Render each page to HTML and write it to the output directory.
     util.each(options.pages, function (source, name) {
-        var view = new options.viewClass(options.meta);
+        var view = new options.viewClass(options.meta, name);
 
         render(source, view, options.partials, function (err, html) {
             if (err) { return callback(err); }
