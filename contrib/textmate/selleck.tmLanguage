@@ -1,0 +1,68 @@
+{	scopeName = 'text.html.mustache.selleck';
+	fileTypes = ('mustache');
+	foldingStartMarker = '(?x)
+		(<(?i:head|body|table|thead|tbody|tfoot|tr|div|select|fieldset|style|script|ul|ol|form|dl)\b.*?>
+		|<!--(?!.*-->)
+		|\{\s*($|\?>\s*$|//|/\*(.*\*/\s*$|(?!.*?\*/)))
+		|^[^\S\n]*(```)[^\S\n]*(.+?)?$
+		)';
+	foldingStopMarker = '(?x)
+		(</(?i:head|body|table|thead|tbody|tfoot|tr|div|select|fieldset|style|script|ul|ol|form|dl)>
+		|^\s*-->
+		|(^|\s)\}
+		|^[^\S\n]*(```)[^\S\n]*$
+		)';
+	patterns = (
+		{	include = '#block'; },
+		{	include = '#inline'; },
+		{	include = '#mustache'; },
+		{	include = 'text.html.basic'; },
+	);
+	repository = {
+		block = {
+			patterns = (
+				{ include = '#code-block'; },
+			);
+		};
+		code-block = {
+			name = 'markup.raw.block.selleck';
+			begin = '^[^\S\n]*(```)[^\S\n]*(.+?)?$';
+			end = '^[^\S\n]*(```)[^\S\n]*$';
+			beginCaptures = {
+				1 = { name = 'punctuation.definition.code.selleck'; };
+				2 = { name = 'punctuation.definition.code.selleck'; };
+			};
+			endCaptures = { 1 = { name = 'punctuation.definition.code.selleck'; }; };
+			patterns = (
+				{ include = '#mustache'; },
+			);
+		};
+		code-inline = {
+			name = 'markup.raw.inline.selleck';
+			match = '(`)(.+?)(`)';
+			captures = {
+				1 = { name = 'punctuation.definition.code.selleck'; };
+				3 = { name = 'punctuation.definition.code.selleck'; };
+			};
+		};
+		inline = {
+			patterns = (
+				{ include = '#code-inline'; },
+				// { include = '#link'; }
+			);
+		};
+		mustache = {
+			patterns = (
+				{	name = 'comment.block.mustache';
+					begin = '\{\{!';
+					end = '\}\}';
+				},
+				{	name = 'source.mustache.embedded.html';
+					begin = '\{\{[{<>#/]?';
+					end = '\}?\}\}';
+					captures = { 0 = { name = 'entity.name.tag.mustache'; }; };
+				},
+			);
+		};
+	};
+}
