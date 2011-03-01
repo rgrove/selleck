@@ -308,8 +308,8 @@ function prepare(inDir, options, callback) {
         return callback(new Error('Validation failed.')); // TODO: get the error from the validator itself
     }
 
-    if (!options.meta.layout) {
-        options.meta.layout = options.layouts[type] || options.layouts.main;
+    if (typeof options.meta.layout === 'undefined') {
+        options.meta.layout = options.layouts[type] ? type : 'main';
     }
 
     callback(null, options);
@@ -321,33 +321,35 @@ Renders the specified template source.
 
 @method render
 @param {String} source Template source to render.
-@param {Object} context Context object.
+@param {Object} view View object.
+@param {String} [layout] Layout template to use.
 @param {Object} [partials] Partials object.
 @param {callback}
   @param {Error} err
   @param {String} html Rendered HTML.
 **/
-function render(source, context, partials, callback) {
+function render(source, view, layout, partials, callback) {
     var html = [];
 
     function buffer(line) {
         html.push(line);
     }
 
-    // Allow callback as third param.
+    // Allow callback as third or fourth param.
     if (typeof partials === 'function') {
         callback = partials;
         partials = {};
+    } else if (typeof layout === 'function') {
+        callback = layout;
+        layout = null;
     }
 
     try {
-        if (context.layout) {
-            mustache.to_html(context.layout, context, util.merge(
-                partials || {},
-                {layout_content: source}
-            ), buffer);
+        if (layout) {
+            mustache.to_html(layout, view, util.merge(partials || {},
+                    {layout_content: source}), buffer);
         } else {
-            mustache.to_html(source, context, partials || {}, buffer);
+            mustache.to_html(source, view, partials || {}, buffer);
         }
     } catch (ex) {
         return callback(ex);
@@ -367,9 +369,10 @@ function writePages(outDir, options, callback) {
 
     // Render each page to HTML and write it to the output directory.
     util.each(options.pages, function (source, name) {
-        var view = new options.viewClass(options.meta, name);
+        var view   = new options.viewClass(options.meta, name),
+            layout = options.layouts[view.layout];
 
-        render(source, view, options.partials, function (err, html) {
+        render(source, view, layout, options.partials, function (err, html) {
             if (err) { return callback(err); }
             fs.writeFile(path.join(outDir, name + '.html'), html, 'utf8', finish);
         });
