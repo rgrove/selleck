@@ -7,7 +7,7 @@ Selleck is a tool for generating user documentation from <a href="http://mustach
 <h2>Requirements</h2>
 
 <p>
-Selleck requires <a href="http://nodejs.org/">Node.js</a> 0.3.7 or greater. It also requires a few third-party dependencies, but these will be installed automatically by npm.
+Selleck requires <a href="http://nodejs.org/">Node.js</a> 0.4.0 or greater. It also requires a few third-party dependencies, but these will be installed automatically by npm.
 </p>
 
 <h2>Installation</h2>
@@ -25,23 +25,29 @@ $ npm install .
 <h2>Overview</h2>
 
 <p>
+Selleck pages are `.mustache` files that can contain HTML markup, Mustache templating tags, and Selleck-specific markup (described below).
+</p>
+
+<p>
 The <a href="http://mustache.github.com/mustache.5.html">Mustache Manual</a> describes the Mustache template language. If you haven't used Mustache before, you may want to read the manual before continuing.
 </p>
 
-<p>
-Selleck docs typically take the form of one top-level <strong>project</strong> with zero or more <strong>components</strong>. These are represented by directories containing various files and subdirectories that follow a few conventions.
-</p>
+<h3>Projects &amp; Components</h3>
 
 <p>
-Projects and components have <strong>metadata</strong> files (<samp>project.json</samp> for projects, <samp>component.json</samp> for components) containing data that will be made available to page templates. Project metadata files must contain a <code>projectName</code> property, and component metadata files must contain a <code>name</code> property; otherwise, the contents of these files are completely up to you.
+Selleck documentation typically takes the form of one top-level <strong>project</strong> with zero or more <strong>components</strong>. These are represented by directories containing various files and subdirectories that follow a few conventions.
 </p>
 
-<p>
-Each project or component may have multiple <strong>pages</strong>. An <samp>index.mustache</samp> page is required, and any number of other <samp>.mustache</samp> pages may also be provided. These will be transformed into <samp>.html</samp> files in the generated output.
-</p>
+<h4>Pages</h4>
 
 <p>
-<strong>Partials</strong> and <strong>layouts</strong> are special Mustache templates that live in the <samp>partial/</samp> and <samp>layout/</samp> directories under a project or component directory.
+Each project or component may have multiple <strong>pages</strong>. An <samp>index.mustache</samp> page is required, and any number of other <samp>.mustache</samp> pages may also be provided in the same directory. These will be transformed into <samp>.html</samp> files in the generated output.
+</p>
+
+<h4>Partials &amp; Layouts</h4>
+
+<p>
+<strong>Partials</strong> and <strong>layouts</strong> are special Mustache templates that live in the <samp>partials/</samp> and <samp>layouts/</samp> directories under a project or component directory.
 </p>
 
 <p>
@@ -56,15 +62,252 @@ A layout is like a wrapper for other pages. A layout named <samp>main.mustache</
 Components will automatically inherit any available partials and layouts from their parent project. If both a project and a component have a partial or layout with the same name, the component's will take precedence at the component level, while the project's will take precedence at the project level.
 </p>
 
+<h4>Metadata</h4>
+
+<p>
+Projects and components have <strong>metadata</strong> files (<samp>project.json</samp> for projects, <samp>component.json</samp> for components) containing data that will be made available to page templates. 
+
+<p>
+Project metadata files must contain a `projectName` property, and component metadata files must contain a `name` property; otherwise, the contents of these files are freeform. You can use these files to provide data to your templates, which you can then refer to using Mustache tags like <code>&#123;{projectName}}</code>.
+</p>
+
+<h5>`project.json` sample</h5>
+
+```
+{
+    "projectName": "YUI 3",
+    "yuiVersion" : "3.3.0",
+    "yuiSeedUrl" : "http://yui.yahooapis.com/combo?3.3.0/build/yui/yui-min.js&3.3.0/build/loader/loader-min.js"
+}
+```
+
+<h5>`component.json` sample</h5>
+
+```
+{
+    "name"       : "autocomplete",
+    "displayName": "AutoComplete",
+    "description": "Provides automatic input completion or suggestions for text input fields and textareas.",
+    "author"     : "rgrove",
+
+    "tags": ["widget", "beta", "autocomplete"],
+    "use" : ["autocomplete"]
+}
+```
+
+{{!TODO: Document additional metadata functionality like "examples" and "pages".}}
+
+<h4>Static Assets</h4>
+
 <p>
 Finally, projects and components may provide an <samp>assets/</samp> directory containing static <strong>assets</strong> such as CSS and JavaScript. The assets directory will be copied directly to the output folder for the project or component in question, so its assets can be referenced via relative URLs.
 </p>
 
+<h3>Directory Structure</h3>
+
 <p>
-See [[#Directory Structure]] for more details on the contents of project and component documentation directories.
+The following table describes the required and optional contents and structure of a project or component documentation directory.
 </p>
 
-<h2>Usage</h2>
+<table>
+<thead>
+    <tr>
+    <th>File/Directory</th>
+    <th>Description</th>
+    </tr>
+</thead>
+
+<tbody>
+    <tr>
+    <td><samp>assets/</samp></td>
+    <td>
+        <p>
+        <i>Optional</i>. Directory containing static assets (such as images, JavaScript, and CSS) used by the documentation. This directory and its contents will be copied to the output directory for the current component. If an <samp>assets/</samp> directory already exists under the output directory, it will be deleted to make way for the new one.
+        </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td><samp>layouts/</samp></td>
+    <td>
+        <p>
+        <i>Optional</i>. Directory containing layouts. A layout is a template that will be wrapped around other pages. A layout named <samp>main.mustache</samp> will be used for all pages, while a layout named <samp>component.mustache</samp> will be used for components (components will fall back to <samp>main.mustache</samp> if <samp>component.mustache</samp> is not found). Inside a layout, the tag <code>&#123;{>layout_content}}</code> will be replaced with page content.
+        </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td><samp>partials/</samp></td>
+    <td>
+        <p>
+        <i>Optional</i>. Directory containing partials. A partial is a <samp>.mustache</samp> file that can be included in another documentation page using a directive like <code>&#123;{>partial-name}}</code>, where `partial-name` is the name (minus extension) of the partial file (e.g. <samp><i>partial-name</i>.mustache</samp>).
+        </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td><samp>component.json</samp></td>
+    <td>
+        <p>
+        <strong>Required for components.</strong> JSON file containing metadata which will be made available to documentation templates.
+        </p>
+
+        <p>
+        The metadata is freeform, but must contain at least a `name` property which contains the name of the component. This name will be used as the name of the component's output directory, among other things.
+    </td>
+    </tr>
+
+    <tr>
+    <td><samp>project.json</samp></td>
+    <td>
+    <p>
+    <strong>Required for projects</strong>. Works just like component metadata; the only difference is that the project metadata must contain a `projectName` property.
+    </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td><samp>index.mustache</samp></td>
+    <td>
+    <p>
+    <strong>Required.</strong> Main Mustache template for the project or component. This will be parsed and generated as <samp>index.html</samp> in the output directory.
+    </p>
+    </td>
+    </tr>
+</tbody>
+</table>
+
+<p>
+In addition to the files listed here, the documentation directory may contain any number of <samp>.mustache</samp> files. These will be parsed and generated as <samp>.html</samp> files in the output directory.
+</p>
+
+<h3>Automatic Table of Contents Generation</h3>
+
+<p>
+If a Selleck template includes the placeholder <code>&#123;{toc}}</code>, Selleck will automatically parse HTML headings at level 2 and up (`<h2>`, `<h3>`, etc.) in the page and will replace the <code>&#123;{toc}}</code> placeholder with a generated table of contents. The table of contents on this very page was generated this way.
+</p>
+
+<p>
+Headings that don't already have `id` attributes will be given generated ids based on the heading text, so `<h2>Sample Heading</h2>` would become `<h2 id="sample-heading">Sample Heading</h2>`.
+</p>
+
+<p>
+To exclude a heading from the table of contents, add the class name `no-toc`, like this:
+</p>
+
+```
+<h2 class="no-toc">Secret Heading</h2>
+```
+
+<h2>Markup Reference</h2>
+
+<p>
+In addition to Mustache templating tags, Selleck provides some markup syntax of its own to make things like escaping code blocks and creating links easier. The following markup is supported in all Selleck pages, layouts, and partials.
+</p>
+
+<table>
+<thead>
+    <tr>
+    <th style="width: 90px">Name</th>
+    <th>Example</th>
+    <th>Description</th>
+    </tr>
+</thead>
+<tbody>
+    <tr>
+    <td>Code block</td>
+    <td>
+        ```nohighlight
+        \```
+        YUI().use('node', function (Y) {
+          // Sample code
+        });
+        \```
+        ```
+    </td>
+    <td>
+        <p>
+        Three backticks on a line by themselves indicate the beginning or end of a block of code. Text inside the block will be HTML-escaped, syntax-highlighted, and wrapped in a `<pre>` tag.
+        </p>
+
+        <p>
+        The wrapped text is automatically unindented to match the indentation level of the first line, so you're free to indent the containing block itself however you want.
+        </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td>Code (inline)</td>
+    <td>
+        ```nohighlight
+        `<code>`
+        ```
+    </td>
+    <td>
+        <p>
+        Text between `\`` characters is HTML-escaped and then wrapped in `<code>` tags. To output a literal `\`` character, escape it with a backslash: `\\``
+        </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td>Link (internal)</td>
+    <td>
+        ```nohighlight
+        \[[#Heading Name]]
+        \[[#Heading Name|Optional Link Text]]
+        ```
+    </td>
+    <td>
+        <p>
+        Creates a link to the specified heading (where `Heading Name` is the text inside a heading tag somewhere on the page, such as `<h2>Heading Name</h2>`).
+        </p>
+
+        <p>
+        By default, the heading name is used as the link text. If optional custom link text is provided, that will be used instead.
+        </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td>Preformatted block (no highlighting)</td>
+    <td>
+        ```nohighlight
+        \```nohighlight
+        This is just a normal preformatted
+        text block with no highlighting.
+        \```
+        ```
+    </td>
+    <td>
+        <p>
+        Just like a code block, but without any syntax highlighting.
+        </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td>Terminal block</td>
+    <td>
+        ```nohighlight
+        \```terminal
+        $ sudo -i
+        # rm -rf /
+        \```
+        ```
+    </td>
+    <td>
+        <p>
+        Like a code block, but for displaying sample input and output for a command line terminal. Shell
+        prompts at the beginnings of lines (`$` or `#`) will be made non-selectable for easier copying and
+        pasting.
+        </p>
+    </td>
+    </tr>
+</tbody>
+</table>
+
+<h2>Command Line Usage</h2>
 
 <p>
 After installation, you'll have a new command line application named <kbd>selleck</kbd>. Run <kbd>selleck -h</kbd> for a summary of the options Selleck supports.
@@ -123,216 +366,6 @@ Finally, the <samp>--server</samp> option will start a web server that you can u
 $ selleck ~/src/yui/yui3 --server
 [info] Selleck is now giving Ferrari rides at http://localhost:3000
 ```
-
-<h2>Directory Structure</h2>
-
-<p>
-The following table describes the required and optional contents and structure of a project or component documentation directory.
-</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>File/Directory</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td><samp>assets/</samp></td>
-      <td>
-        <p>
-        <i>Optional</i>. Directory containing static assets (such as images, JavaScript, and CSS) used by the documentation. This directory and its contents will be copied to the output directory for the current component. If an <samp>assets/</samp> directory already exists under the output directory, it will be deleted to make way for the new one.
-        </p>
-      </td>
-    </tr>
-
-    <tr>
-      <td><samp>layout/</samp></td>
-      <td>
-        <p>
-          <i>Optional</i>. Directory containing layouts. A layout is a template that will be wrapped around other pages. A layout named <samp>main.mustache</samp> will be used for all pages, while a layout named <samp>component.mustache</samp> will be used for components (components will fall back to <samp>main.mustache</samp> if <samp>component.mustache</samp> is not found). Inside a layout, the tag <code>&#123;{>layout_content}}</code> will be replaced with page content.
-        </p>
-      </td>
-    </tr>
-
-    <tr>
-      <td><samp>partial/</samp></td>
-      <td>
-        <p>
-        <i>Optional</i>. Directory containing partials. A partial is a <samp>.mustache</samp> file that can be included in another documentation page using a directive like <code>&#123;{>partial-name}}</code>, where <code>partial-name</code> is the name (minus extension) of the partial file (e.g. <samp><i>partial-name</i>.mustache</samp>).
-        </p>
-      </td>
-    </tr>
-
-    <tr>
-      <td><samp>component.json</samp></td>
-      <td>
-        <p>
-        <strong>Required for components.</strong> JSON file containing metadata which will be made available to documentation templates.
-        </p>
-        
-        <p>
-        The metadata is freeform, but must contain at least a <code>name</code> property which contains the name of the component. This name will be used as the name of the component's output directory, among other things. Here's a sample <samp>component.json</samp> file:
-        </p>
-
-<pre>
-{
-  "name": "my-component",
-  "foo" : "arbitrary data",
-  "bar" : ["baz"]
-}
-</pre>
-
-        <p>
-        This component's Mustache templates can then include this data in the documentation using the Mustache tags <code>&#123;{name}}</code>, <code>&#123;{foo}}</code>, and <code>&#123;{bar}}</code>.
-        </p>
-      </td>
-    </tr>
-
-    <tr>
-      <td><samp>project.json</samp></td>
-      <td>
-        <p>
-        <strong>Required for projects</strong>. Works just like component metadata; the only difference is that the project metadata must contain a <code>projectName</code> property.
-        </p>
-      </td>
-    </tr>
-
-    <tr>
-      <td><samp>index.mustache</samp></td>
-      <td>
-        <p>
-        <strong>Required.</strong> Main Mustache template for the component. This will be parsed and generated as <samp>index.html</samp> in the component's output directory.
-        </p>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<p>
-In addition to the files listed here, the documentation directory may contain any number of <samp>.mustache</samp> files. These will be parsed and generated as <samp>.html</samp> files in the component's output directory.
-</p>
-
-<h2>Documentation Templates</h2>
-
-<p>
-Documentation templates can include any property from the <samp>project.json</samp> or <samp>component.json</samp> metadata files by referring to it with a Mustache <code>&#123;{tag}}</code>. In addition to this freeform metadata, Selleck also provides several predefined helper functions that templates can use to transform or wrap blocks of content.
-</p>
-
-<h3>Global Helpers</h3>
-
-<p>
-Global helpers can be used in any Selleck template, whether at the global project-wide template level or at the component level.
-</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td><code>code</code></td>
-      <td>Section</td>
-      <td>
-        <p>
-        Escapes HTML characters in the given content and wraps it in a syntax-highlighted <code>&lt;pre&gt;</code> block.
-        </p>
-
-<pre>
-&#123;{#code}}
-YUI().use('example', function () {
-  // Here's some example code that will be escaped and
-  // highlighted.
-});
-&#123;{/code}}
-</pre>
-      </td>
-    </tr>
-
-    <tr>
-      <td><code>terminal</code></td>
-      <td>Section</td>
-      <td>
-        <p>
-        Similar to <code>code</code>, but for commands that should be entered into a terminal. Shell prompts (<code>$</code> or <code>#</code>) at the beginnings of lines will be made non-selectable to make copying and pasting easier.
-        </p>
-
-<pre>
-&#123;{#terminal}}
-$ cd /foo
-$ make install clean
-&#123;{/terminal}}
-</pre>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<h3>Component Helpers</h3>
-
-<p>
-Component helpers can be used in component templates, but not in global templates.
-</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td><code>intro</code></td>
-      <td>Section</td>
-      <td>
-        <p>
-        Wraps the given section content in an intro <code>&lt;div&gt;</code>. Used for the introductory description at the top of a component's documentation page.
-        </p>
-
-<pre>
-&#123;{#intro}}
-&lt;p&gt;
-This is some intro content for a component.
-&lt;/p&gt;
-&#123;{/intro}}
-</pre>
-      </td>
-
-    <tr>
-      <td><code>title</code></td>
-      <td>Variable</td>
-      <td>
-        <p>
-        Page title for this component: a concatenation of the global <code>projectName</code> metadata property with the component's <code>name</code> metadata property.
-        </p>
-
-        <pre>&#123;{title}}</pre>
-      </td>
-    </tr>
-
-    <tr>
-      <td><code>useParams</code></td>
-      <td>Variable</td>
-      <td>
-        <p>
-        Module name parameters for a YUI 3 <code>use()</code> statement, built from the value of the <code>use</code> property in the component's metadata.
-        </p>
-
-        <pre>&#123;{useParams}}</pre>
-      </td>
-    </tr>
-  </tbody>
-</table>
 
 <h2>Other Stuff</h2>
 

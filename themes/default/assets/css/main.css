@@ -83,8 +83,23 @@ code, kbd, pre, samp {
     line-height: 1.35;
 }
 
+p code, p kbd, p samp {
+    background: #f6f6f6;
+    border: 1px solid #ededed;
+    padding: 0 3px;
+}
+
+a code, a kbd, a samp,
+pre code, pre kbd, pre samp,
+table code, table kbd, table samp,
+.intro code, .intro kbd, .intro samp,
+.toc code, .toc kbd, .toc samp {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
 pre.code, pre.terminal {
-/*    font-size: 84.615%;*/
     overflow-x: auto;
     padding: 0.3em 0.6em;
 }
@@ -205,7 +220,6 @@ dt { font-weight: bold; }
    class refers to generic TOC lists that could be used throughout the page. */
 
 .toc code, .toc kbd, .toc samp { font-size: 100%; }
-
 .toc li { font-weight: bold; }
 .toc li li { font-weight: normal; }
 
