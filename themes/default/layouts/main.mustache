@@ -13,6 +13,10 @@
 <div id="doc">
     <h1>{{title}}</h1>
 
+    {{^hideTableOfContents}}
+        <a href="#toc" class="jump">Jump to Table of Contents</a>
+    {{/hideTableOfContents}}
+
     <div class="yui3-g">
         <div id="main" class="yui3-u">
             <div class="content">{{>layout_content}}</div>

@@ -30,6 +30,7 @@ body {
     padding: 0;
 }
 
+/* -- Links ----------------------------------------------------------------- */
 a {
     color: #356de4;
     text-decoration: none;
@@ -37,6 +38,18 @@ a {
 
 a:hover { text-decoration: underline; }
 
+/* "Jump to Table of Contents" link is shown to assistive tools, but hidden from
+   sight until it's focused. */
+.jump {
+    position: absolute;
+    padding: 3px 6px;
+    left: -99999px;
+    top: 0;
+}
+
+.jump:focus { left: 40%; }
+
+/* -- Paragraphs ------------------------------------------------------------ */
 p { margin: 1.3em 0; }
 dd p, td p { margin-bottom: 0; }
 dd p:first-child, td p:first-child { margin-top: 0; }
