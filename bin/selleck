@@ -5,7 +5,10 @@ Copyright (c) 2011 Yahoo! Inc.
 Licensed under the BSD License.
 */
 
-var selleck   = require('selleck'),
+var fs        = require('fs'),
+    fsPath    = require('path'),
+
+    selleck   = require('selleck'),
     fileutils = require('selleck/lib/fileutils'),
     higgins   = require('selleck/lib/higgins'),
     util      = require('selleck/lib/util'), // Selleck's util, not Node's util.
@@ -20,8 +23,9 @@ var selleck   = require('selleck'),
 
     // Default values for command line options.
     options  = {
-        out  : './docs',
-        theme: selleck.defaultTheme
+        'out'    : './docs',
+        'out-ext': '.html',
+        'theme'  : selleck.defaultTheme
     },
 
     projectLayouts  = {},
@@ -37,14 +41,24 @@ var selleck   = require('selleck'),
         "",
         "Usage: selleck [options] [input path]",
         "",
-        "Options:",
-        "  -o, --out <path>      Write generated files to this output path.",
-        "  -p, --project <path>  Use the specified project path instead of searching for",
-        "                        the project.",
-        "  -s, --server [port]   Run Selleck as a web server for real-time previews of",
-        "                        changes while editing docs.",
-        "  -t, --theme <path>    Use the specified theme instead of the default.",
-        "  -h, --help            Display this help message."
+        "Common Options:",
+        "  -o, --out <path>       Write generated files to this output path.",
+        "  -p, --project <path>   Use the specified project path instead of searching for",
+        "                         the project.",
+        "  -s, --server [port]    Run Selleck as a web server for real-time previews of",
+        "                         changes while editing docs.",
+        "  -t, --theme <path>     Use the specified theme instead of the default.",
+        "  -h, --help             Display this help message.",
+        "",
+        "Advanced Options:",
+        "  --out-assets <path>    Copy all assets to this output path instead of the",
+        "                         default. Component assets will be copied to",
+        "                         subdirectories named for the component.",
+        "  --out-ext <extension>  Use the specified file extension for generated pages",
+        "                         instead of the default (.html).",
+        "  --out-meta <filename>  Write combined project and component JSON metadata to",
+        "                         the specified filename.",
+        ""
     ].join('\n');
 
 // Process command line parameters.
@@ -59,7 +73,11 @@ while ((arg = argv.shift())) {
     switch (arg) {
     case '--help':
     case '-h':
-        console.log(help);
+        // WTF. This is seriously the only way I've been able to figure out to
+        // make Node reliably flush to stdout before exiting. It's ridiculous.
+        // This is stupid. 
+        process.stdout.write(help);
+        while (!process.stdout.flush()) {};
         process.exit();
         break;
 
@@ -67,6 +85,25 @@ while ((arg = argv.shift())) {
     case '--out':
     case '-o':
         options.out = argv.shift();
+        break;
+
+    case '--output-assets':
+    case '--out-assets':
+        options['out-assets'] = argv.shift();
+        break;
+
+    case '--output-extension':
+    case '--output-ext':
+    case '--out-extension':
+    case '--out-ext':
+        options['out-ext'] = argv.shift();
+        break;
+
+    case '--output-metadata':
+    case '--output-meta':
+    case '--out-metadata':
+    case '--out-meta':
+        options['out-meta'] = argv.shift();
         break;
 
     case '--project':
@@ -109,18 +146,23 @@ while ((arg = argv.shift())) {
 // directory.
 options.rootPath = args.shift() || process.cwd();
 
-// If running as a server, start the server instead of continuing.
+options['out-assets'] || (options['out-assets'] = fsPath.join(options.out, 'assets'));
+
 if (options.server) {
+    // If running as a server, start the server instead of continuing.
     require('selleck/lib/server')(options);
 } else {
     selleck.createOutputDir(options.out);
+    selleck.createOutputDir(options['out-assets']);
 
     // Load theme layouts and partials, and copy theme assets to the output dir,
     // if there are any.
     themeLayouts  = selleck.getLayouts(options.theme);
     themePartials = selleck.getPartials(options.theme);
 
-    selleck.copyAssets(options.theme, options.out, true, function (err) {
+    selleck.copyAssets(fsPath.join(options.theme, 'assets'),
+            options['out-assets'], true, function (err) {
+
         if (err) {
             log(err.message, 'error');
             process.exit(1);
@@ -138,7 +180,7 @@ if (options.server) {
 
         log('Generating project docs for ' + docs.project.path, 'info');
 
-        selleck.generate(docs.project.path, options.out, {
+        selleck.generate(docs.project.path, util.merge(options, {
             layouts  : projectLayouts,
             meta     : projectMeta,
             partials : projectPartials,
@@ -146,7 +188,7 @@ if (options.server) {
             project  : true,
             skipLoad : true, // Don't reload stuff from the input dir.
             validator: projectValidator
-        }, generateComponents);
+        }), generateComponents);
     } else {
         generateComponents();
     }
@@ -163,14 +205,14 @@ if (options.server) {
 
             log('Generating component docs for ' + path, 'info');
 
-            selleck.generate(path, options.out, {
+            selleck.generate(path, util.merge(options, {
                 component: true,
                 layouts  : projectLayouts,
                 meta     : projectMeta,
                 partials : projectPartials,
                 pages    : projectPages,
                 validator: componentValidator
-            }, finishComponent);
+            }), finishComponent);
         });
 
         function finishComponent(err) {
@@ -187,7 +229,39 @@ if (options.server) {
     function finish(err) {
         if (err) {
             log(err, 'error');
+            return;
+        }
+
+        var meta;
+
+        if (options['out-meta']) {
+            log('Writing combined metadata to ' + options['out-meta'], 'info');
+
+            meta = {
+                project: projectMeta,
+                components: {}
+            };
+
+            docs.components.forEach(function (component) {
+                var data = selleck.getMetadata(component.path, 'component');
+
+                if (data && data.name) {
+                    meta.components[data.name] = data;
+                }
+            });
+
+            fs.writeFile(options['out-meta'], JSON.stringify(meta), 'utf8', function (err) {
+                if (err) {
+                    log(err, 'error');
+                } else {
+                    reallyFinish();
+                }
+            });
         } else {
+            reallyFinish();
+        }
+
+        function reallyFinish() {
             log('Done! Docs were written to: ' + options.out, 'info');
         }
     }

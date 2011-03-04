@@ -122,7 +122,11 @@ The following table describes the required and optional contents and structure o
     <td><samp>assets/</samp></td>
     <td>
         <p>
-        <i>Optional</i>. Directory containing static assets (such as images, JavaScript, and CSS) used by the documentation. This directory and its contents will be copied to the output directory for the current component. If an <samp>assets/</samp> directory already exists under the output directory, it will be deleted to make way for the new one.
+        <i>Optional</i>. Directory containing static assets (such as images, JavaScript, and CSS) used by the documentation. This directory and its contents will be copied to the output directory. If an <samp>assets/</samp> directory already exists under the output directory, it will be deleted to make way for the new one.
+        </p>
+
+        <p>
+        Component assets are copied to subdirectories of the main assets directory, named according to the value of the `name` property in the component's metadata.
         </p>
     </td>
     </tr>

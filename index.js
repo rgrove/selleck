@@ -29,8 +29,8 @@ exports.defaultTheme = path.join(__dirname, 'themes', 'default');
 
 /**
 @method copyAssets
-@param {String} inDir
-@param {String} outDir
+@param {String} from Directory to copy from.
+@param {String} to Directory to copy to.
 @param {bool} [deleteFirst=false]
 @callback
   @param {Error} err
@@ -38,21 +38,16 @@ exports.defaultTheme = path.join(__dirname, 'themes', 'default');
 function copyAssets() {
     var args        = Array.prototype.slice.call(arguments),
         callback    = args.pop(),
-        inDir       = args.shift(),
-        outDir      = args.shift(),
-        deleteFirst = args.shift(),
+        from        = args.shift(),
+        to          = args.shift(),
+        deleteFirst = args.shift();
 
-        inAssets  = path.join(inDir, 'assets'),
-        outAssets = path.join(outDir, 'assets');
-
-    // If the input directory contains an "assets" subdirectory, copy it to the
-    // output directory.
-    if (fileutils.isDirectory(inAssets)) {
-        if (deleteFirst && fileutils.isDirectory(outAssets)) {
-            fileutils.deletePath(outAssets);
+    if (fileutils.isDirectory(from)) {
+        if (deleteFirst && fileutils.isDirectory(to)) {
+            fileutils.deletePath(to);
         }
 
-        fileutils.copyPath(inAssets, outAssets, true, callback);
+        fileutils.copyPath(from, to, true, callback);
     } else {
         callback();
     }
@@ -115,21 +110,29 @@ exports.findDocs = findDocs;
 
 /**
 @method generate
+@param {String} inDir Input directory containing docs and assets to generate.
+@param {Object} options Generation options.
+@param {callback}
+  @param {Error} err
 **/
-function generate(inDir, outDir, options, callback) {
+function generate(inDir, options, callback) {
     prepare(inDir, options, function (err, options) {
         if (err) { return callback(err); }
 
+        var out       = options.out,
+            outAssets = options['out-assets'];
+
         // Append meta.name to the output path if this is a component.
         if (options.component) {
-            outDir = path.join(outDir, options.meta.name);
+            out       = path.join(out, options.meta.name);
+            outAssets = path.join(outAssets, options.meta.name);
         }
 
-        createOutputDir(outDir);
+        createOutputDir(out);
 
-        copyAssets(inDir, outDir, function (err) {
+        copyAssets(path.join(inDir, 'assets'), outAssets, function (err) {
             if (err) { return callback(err); }
-            writePages(outDir, options, callback);
+            writePages(out, options, callback);
         });
     });
 }
@@ -303,6 +306,15 @@ function prepare(inDir, options, callback) {
         });
     }
 
+    // Set a default asset path if one isn't specified in the metadata.
+    if (!options.meta.projectAssets) {
+        options.meta.projectAssets = options.component ? '../assets' : 'assets';
+    }
+
+    if (!options.meta.componentAssets && options.component) {
+        options.meta.componentAssets = '../assets/' + options.meta.name;
+    }
+
     // If a validator function was provided, run it.
     if (options.validator && options.validator(options, inDir) === false) {
         return callback(new Error('Validation failed.')); // TODO: get the error from the validator itself
@@ -363,7 +375,8 @@ exports.render = render;
 @method writePages
 **/
 function writePages(outDir, options, callback) {
-    var toWrite = util.size(options.pages);
+    var ext     = options['out-ext'],
+        toWrite = util.size(options.pages);
 
     if (!toWrite) { return callback(); }
 
@@ -374,7 +387,7 @@ function writePages(outDir, options, callback) {
 
         render(source, view, layout, options.partials, function (err, html) {
             if (err) { return callback(err); }
-            fs.writeFile(path.join(outDir, name + '.html'), html, 'utf8', finish);
+            fs.writeFile(path.join(outDir, name + ext), html, 'utf8', finish);
         });
     });
 

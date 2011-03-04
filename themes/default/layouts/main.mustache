@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <title>{{htmlTitle}}</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.3.0/build/cssgrids/grids-min.css">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="{{projectAssets}}/css/main.css">
+    <link rel="stylesheet" href="{{projectAssets}}/vendor/prettify/prettify-min.css">
     <script src="http://yui.yahooapis.com/combo?3.3.0/build/yui/yui-min.js&amp;3.3.0/build/loader/loader-min.js"></script>
 </head>
 <body>
@@ -34,11 +34,27 @@
                     </div>
                 </div>
             {{/hideTableOfContents}}
+
+            {{#hasExamples}}
+                <div class="sidebox">
+                    <div class="hd">
+                        <h2 class="no-toc">Examples</h2>
+                    </div>
+
+                    <div class="bd">
+                        <ul class="examples">
+                            {{#examples}}
+                                <li data-description="{{description}}"><a href="{{name}}.html">{{displayName}}</a></li>
+                            {{/examples}}
+                        </ul>
+                    </div>
+                </div>
+            {{/hasExamples}}
         </div>
     </div>
 </div>
 
-<script src="assets/vendor/prettify/prettify-min.js"></script>
+<script src="{{projectAssets}}/vendor/prettify/prettify-min.js"></script>
 <script>prettyPrint();</script>
 
 </body>
