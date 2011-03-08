@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Selleck User Guide</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.3.0/build/cssgrids/grids-min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/vendor/prettify/prettify-min.css">
+    <script src="http://yui.yahooapis.com/combo?3.3.0/build/yui/yui-min.js&amp;3.3.0/build/loader/loader-min.js"></script>
+</head>
+<body>
+
+<div id="doc">
+    <h1>Selleck User Guide</h1>
+
+            <a href="#toc" class="jump">Jump to Table of Contents</a>
+    <div class="yui3-g">
+        <div id="main" class="yui3-u">
+            <div class="content"><div class="intro">
+<p>
+Selleck is a tool for generating user documentation from <a href="http://mustache.github.com/">Mustache</a>-based templates. It was created to generate documentation for the YUI Library. At the moment this document and Selleck itself are pretty YUI-specific, but over time Selleck will become a more generic tool, and the YUI-specific parts of the workflow (and this document) will be broken out.
+</p>
+</div>
+
+<h2 id="requirements">Requirements</h2>
+
+<p>
+Selleck requires <a href="http://nodejs.org/">Node.js</a> 0.4.0 or greater. It also requires a few third-party dependencies, but these will be installed automatically by npm.
+</p>
+
+<h2 id="installation">Installation</h2>
+
+<p>
+For the moment, Selleck is only available from the internal git repo. To clone the repo and install Selleck, run the following commands:
+</p>
+
+<pre class="terminal"><span class="noselect">$ </span>git clone git@yuisource.corp.yahoo.com:selleck
+<span class="noselect">$ </span>cd selleck
+<span class="noselect">$ </span>npm install .</pre>
+
+
+<h2 id="overview">Overview</h2>
+
+<p>
+Selleck pages are <code>.mustache</code> files that can contain HTML markup, Mustache templating tags, and Selleck-specific markup (described below).
+</p>
+
+<p>
+The <a href="http://mustache.github.com/mustache.5.html">Mustache Manual</a> describes the Mustache template language. If you haven't used Mustache before, you may want to read the manual before continuing.
+</p>
+
+<h3 id="projects-components">Projects &amp; Components</h3>
+
+<p>
+Selleck documentation typically takes the form of one top-level <strong>project</strong> with zero or more <strong>components</strong>. These are represented by directories containing various files and subdirectories that follow a few conventions.
+</p>
+
+<h4 id="pages">Pages</h4>
+
+<p>
+Each project or component may have multiple <strong>pages</strong>. An <samp>index.mustache</samp> page is required, and any number of other <samp>.mustache</samp> pages may also be provided in the same directory. These will be transformed into <samp>.html</samp> files in the generated output.
+</p>
+
+<h4 id="partials-layouts">Partials &amp; Layouts</h4>
+
+<p>
+<strong>Partials</strong> and <strong>layouts</strong> are special Mustache templates that live in the <samp>partials/</samp> and <samp>layouts/</samp> directories under a project or component directory.
+</p>
+
+<p>
+A partial can be included in any page simply by referring to it by name using a special Mustache tag. For example, the tag <code>&#123;{&gt;footer}}</code> would include a partial named <samp>footer.mustache</samp>.
+</p>
+
+<p>
+A layout is like a wrapper for other pages. A layout named <samp>main.mustache</samp> will be used by default to wrap all pages, if it exists. A layout named <samp>component.mustache</samp> will be used to wrap all component pages; if no component layout exists, then component pages will use the main layout. Inside the layout, the special partial tag <code>&#123;{>layout_content}}</code> will be replaced with the page content.
+</p>
+
+<p>
+Components will automatically inherit any available partials and layouts from their parent project. If both a project and a component have a partial or layout with the same name, the component's will take precedence at the component level, while the project's will take precedence at the project level.
+</p>
+
+<h4 id="metadata">Metadata</h4>
+
+<p>
+Projects and components have <strong>metadata</strong> files (<samp>project.json</samp> for projects, <samp>component.json</samp> for components) containing data that will be made available to page templates. 
+
+<p>
+Project metadata files must contain a <code>projectName</code> property, and component metadata files must contain a <code>name</code> property; otherwise, the contents of these files are freeform. You can use these files to provide data to your templates, which you can then refer to using Mustache tags like <code>&#123;{projectName}}</code>.
+</p>
+
+<h5 id="projectjson-sample"><code>project.json</code> sample</h5>
+
+<pre class="code prettyprint">{
+    &quot;projectName&quot;: &quot;YUI 3&quot;,
+    &quot;yuiVersion&quot; : &quot;3.3.0&quot;,
+    &quot;yuiSeedUrl&quot; : &quot;http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.3.0&#x2F;build&#x2F;yui&#x2F;yui-min.js&amp;3.3.0&#x2F;build&#x2F;loader&#x2F;loader-min.js&quot;
+}</pre>
+
+
+<h5 id="componentjson-sample"><code>component.json</code> sample</h5>
+
+<pre class="code prettyprint">{
+    &quot;name&quot;       : &quot;autocomplete&quot;,
+    &quot;displayName&quot;: &quot;AutoComplete&quot;,
+    &quot;description&quot;: &quot;Provides automatic input completion or suggestions for text input fields and textareas.&quot;,
+    &quot;author&quot;     : &quot;rgrove&quot;,
+
+    &quot;tags&quot;: [&quot;widget&quot;, &quot;beta&quot;, &quot;autocomplete&quot;],
+    &quot;use&quot; : [&quot;autocomplete&quot;]
+}</pre>
+
+
+
+
+<h4 id="static-assets">Static Assets</h4>
+
+<p>
+Finally, projects and components may provide an <samp>assets/</samp> directory containing static <strong>assets</strong> such as CSS and JavaScript. The assets directory will be copied directly to the output folder for the project or component in question, so its assets can be referenced via relative URLs.
+</p>
+
+<h3 id="directory-structure">Directory Structure</h3>
+
+<p>
+The following table describes the required and optional contents and structure of a project or component documentation directory.
+</p>
+
+<table>
+<thead>
+    <tr>
+    <th>File/Directory</th>
+    <th>Description</th>
+    </tr>
+</thead>
+
+<tbody>
+    <tr>
+    <td><samp>assets/</samp></td>
+    <td>
+        <p>
+        <i>Optional</i>. Directory containing static assets (such as images, JavaScript, and CSS) used by the documentation. This directory and its contents will be copied to the output directory. If an <samp>assets/</samp> directory already exists under the output directory, it will be deleted to make way for the new one.
+        </p>
+
+        <p>
+        Component assets are copied to subdirectories of the main assets directory, named according to the value of the <code>name</code> property in the component's metadata.
+        </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td><samp>layouts/</samp></td>
+    <td>
+        <p>
+        <i>Optional</i>. Directory containing layouts. A layout is a template that will be wrapped around other pages. A layout named <samp>main.mustache</samp> will be used for all pages, while a layout named <samp>component.mustache</samp> will be used for components (components will fall back to <samp>main.mustache</samp> if <samp>component.mustache</samp> is not found). Inside a layout, the tag <code>&#123;{>layout_content}}</code> will be replaced with page content.
+        </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td><samp>partials/</samp></td>
+    <td>
+        <p>
+        <i>Optional</i>. Directory containing partials. A partial is a <samp>.mustache</samp> file that can be included in another documentation page using a directive like <code>&#123;{>partial-name}}</code>, where <code>partial-name</code> is the name (minus extension) of the partial file (e.g. <samp><i>partial-name</i>.mustache</samp>).
+        </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td><samp>component.json</samp></td>
+    <td>
+        <p>
+        <strong>Required for components.</strong> JSON file containing metadata which will be made available to documentation templates.
+        </p>
+
+        <p>
+        The metadata is freeform, but must contain at least a <code>name</code> property which contains the name of the component. This name will be used as the name of the component's output directory, among other things.
+    </td>
+    </tr>
+
+    <tr>
+    <td><samp>project.json</samp></td>
+    <td>
+    <p>
+    <strong>Required for projects</strong>. Works just like component metadata; the only difference is that the project metadata must contain a <code>projectName</code> property.
+    </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td><samp>index.mustache</samp></td>
+    <td>
+    <p>
+    <strong>Required.</strong> Main Mustache template for the project or component. This will be parsed and generated as <samp>index.html</samp> in the output directory.
+    </p>
+    </td>
+    </tr>
+</tbody>
+</table>
+
+<p>
+In addition to the files listed here, the documentation directory may contain any number of <samp>.mustache</samp> files. These will be parsed and generated as <samp>.html</samp> files in the output directory.
+</p>
+
+<h3 id="automatic-table-of-contents-generation">Automatic Table of Contents Generation</h3>
+
+<p>
+If a Selleck template includes the placeholder <code>&#123;{toc}}</code>, Selleck will automatically parse HTML headings at level 2 and up (<code>&lt;h2&gt;</code>, <code>&lt;h3&gt;</code>, etc.) in the page and will replace the <code>&#123;{toc}}</code> placeholder with a generated table of contents. The table of contents on this very page was generated this way.
+</p>
+
+<p>
+Headings that don't already have <code>id</code> attributes will be given generated ids based on the heading text, so <code>&lt;h2&gt;Sample Heading&lt;&#x2F;h2&gt;</code> would become <code>&lt;h2 id=&quot;sample-heading&quot;&gt;Sample Heading&lt;&#x2F;h2&gt;</code>.
+</p>
+
+<p>
+To exclude a heading from the table of contents, add the class name <code>no-toc</code>, like this:
+</p>
+
+<pre class="code prettyprint">&lt;h2 class=&quot;no-toc&quot;&gt;Secret Heading&lt;&#x2F;h2&gt;</pre>
+
+
+<h2 id="markup-reference">Markup Reference</h2>
+
+<p>
+In addition to Mustache templating tags, Selleck provides some markup syntax of its own to make things like escaping code blocks and creating links easier. The following markup is supported in all Selleck pages, layouts, and partials.
+</p>
+
+<table>
+<thead>
+    <tr>
+    <th style="width: 90px">Name</th>
+    <th>Example</th>
+    <th>Description</th>
+    </tr>
+</thead>
+<tbody>
+    <tr>
+    <td>Code block</td>
+    <td>
+<pre class="">`&#x60;&#x60;
+YUI().use(&#x27;node&#x27;, function (Y) {
+  &#x2F;&#x2F; Sample code
+});
+`&#x60;&#x60;</pre>
+
+    </td>
+    <td>
+        <p>
+        Three backticks on a line by themselves indicate the beginning or end of a block of code. Text inside the block will be HTML-escaped, syntax-highlighted, and wrapped in a <code>&lt;pre&gt;</code> tag.
+        </p>
+
+        <p>
+        The wrapped text is automatically unindented to match the indentation level of the first line, so you're free to indent the containing block itself however you want.
+        </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td>Code (inline)</td>
+    <td>
+<pre class="">&#x60;&lt;code&gt;&#x60;</pre>
+
+    </td>
+    <td>
+        <p>
+        Text between <code>`</code> characters is HTML-escaped and then wrapped in <code>&lt;code&gt;</code> tags. To output a literal <code>`</code> character, escape it with a backslash: <code>\`</code>
+        </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td>Link (internal)</td>
+    <td>
+<pre class="">[[#Heading Name]]
+[[#Heading Name|Optional Link Text]]</pre>
+
+    </td>
+    <td>
+        <p>
+        Creates a link to the specified heading (where <code>Heading Name</code> is the text inside a heading tag somewhere on the page, such as <code>&lt;h2&gt;Heading Name&lt;&#x2F;h2&gt;</code>).
+        </p>
+
+        <p>
+        By default, the heading name is used as the link text. If optional custom link text is provided, that will be used instead.
+        </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td>Preformatted block (no highlighting)</td>
+    <td>
+<pre class="">`&#x60;&#x60;nohighlight
+This is just a normal preformatted
+text block with no highlighting.
+`&#x60;&#x60;</pre>
+
+    </td>
+    <td>
+        <p>
+        Just like a code block, but without any syntax highlighting.
+        </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td>Terminal block</td>
+    <td>
+<pre class="">`&#x60;&#x60;terminal
+$ sudo -i
+# rm -rf &#x2F;
+`&#x60;&#x60;</pre>
+
+    </td>
+    <td>
+        <p>
+        Like a code block, but for displaying sample input and output for a command line terminal. Shell
+        prompts at the beginnings of lines (<code>$</code> or <code>#</code>) will be made non-selectable for easier copying and
+        pasting.
+        </p>
+    </td>
+    </tr>
+</tbody>
+</table>
+
+<h2 id="command-line-usage">Command Line Usage</h2>
+
+<p>
+After installation, you'll have a new command line application named <kbd>selleck</kbd>. Run <kbd>selleck -h</kbd> for a summary of the options Selleck supports.
+</p>
+
+<p>
+If no options are given, Selleck will search the current directory and all its subdirectories recursively, looking for documentation directories (it does this by searching for <samp>project.json</samp> and <samp>component.json</samp> files). It will generate HTML documentation from all the doc directories it finds, and will write the generated docs to <samp>./docs</samp> by default.
+</p>
+
+<pre class="terminal"><span class="noselect">$ </span>cd ~&#x2F;src&#x2F;yui&#x2F;yui3
+<span class="noselect">$ </span>selleck
+[info] Generating project docs for &#x2F;Users&#x2F;rgrove&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;src&#x2F;common&#x2F;docs
+[info] Generating component docs for &#x2F;Users&#x2F;rgrove&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;src&#x2F;autocomplete&#x2F;docs
+[info] Generating component docs for &#x2F;Users&#x2F;rgrove&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;src&#x2F;history&#x2F;docs
+[info] Done! Docs were written to: .&#x2F;docs</pre>
+
+
+<p>
+To generate documentation from a directory other than the current directory, pass the directory as an argument.
+</p>
+
+<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3</pre>
+
+
+<p>
+You may also optionally specify an output directory for the generated docs.
+</p>
+
+<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --out ~&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;docs</pre>
+
+
+<p>
+To specify a documentation theme other than Selleck's default theme, use the <kbd>--theme</kbd> option/
+</p>
+
+<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --theme &#x2F;path&#x2F;to&#x2F;theme</pre>
+
+
+<p>
+To generate documentation for an explicit project rather than searching for the project, use the <samp>--project</samp> option.
+</p>
+
+<pre class="terminal"><span class="noselect">$ </span>selleck --project &#x2F;path&#x2F;to&#x2F;project</pre>
+
+
+<p>
+Finally, the <samp>--server</samp> option will start a web server that you can use to preview your documentation in real time as you make changes, so that you don't need to regenerate after every change. It can be used in combination with any of the other options.
+</p>
+
+<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --server
+[info] Selleck is now giving Ferrari rides at http:&#x2F;&#x2F;localhost:3000</pre>
+
+
+<h2 id="other-stuff">Other Stuff</h2>
+
+<p>
+Selleck isn't finished yet, and there's still more to document here. For now, poke around the default template and some of the component doc directories in the YUI 3 source tree to see what's possible.
+</p>
+</div>
+        </div>
+
+        <div id="sidebar" class="yui3-u">
+                            <div id="toc" class="sidebox">
+                    <div class="hd">
+                        <h2 class="no-toc">Table of Contents</h2>
+                    </div>
+
+                    <div class="bd">
+                        <ul class="toc">
+<li>
+<a href="#requirements">Requirements</a>
+</li>
+<li>
+<a href="#installation">Installation</a>
+</li>
+<li>
+<a href="#overview">Overview</a>
+<ul class="toc">
+<li>
+<a href="#projects-components">Projects &amp; Components</a>
+<ul class="toc">
+<li>
+<a href="#pages">Pages</a>
+</li>
+<li>
+<a href="#partials-layouts">Partials &amp; Layouts</a>
+</li>
+<li>
+<a href="#metadata">Metadata</a>
+<ul class="toc">
+<li>
+<a href="#projectjson-sample"><code>project.json</code> sample</a>
+</li>
+<li>
+<a href="#componentjson-sample"><code>component.json</code> sample</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#static-assets">Static Assets</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#directory-structure">Directory Structure</a>
+</li>
+<li>
+<a href="#automatic-table-of-contents-generation">Automatic Table of Contents Generation</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#markup-reference">Markup Reference</a>
+</li>
+<li>
+<a href="#command-line-usage">Command Line Usage</a>
+</li>
+<li>
+<a href="#other-stuff">Other Stuff</a>
+</li>
+</ul>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+<script src="assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+
+</body>
+</html>
