@@ -141,7 +141,7 @@ exports.generate = generate;
 /**
 @method getMetadata
 **/
-function getMetadata(dir, type) {
+function getMetadata(dir, type, throwOnError) {
     var filePath = path.join(dir, type + '.json'),
         json, meta;
 
@@ -152,6 +152,7 @@ function getMetadata(dir, type) {
             meta = JSON.parse(json);
         } catch (ex) {
             log(filePath + ': JSON error: ' + ex.message, 'error');
+            if (throwOnError) { throw ex; }
         }
     }
 
@@ -296,14 +297,18 @@ function prepare(inDir, options, callback) {
         // order to support a use case where global data are provided by the
         // caller and overridden by more specific component-level data gathered
         // from the input directory.
-        options = util.merge({
-            viewClass: options.component ? ComponentView : View
-        }, options || {}, {
-            layouts : getLayouts(inDir),
-            meta    : getMetadata(inDir, type),
-            pages   : getPages(inDir),
-            partials: getPartials(inDir)
-        });
+        try {
+            options = util.merge({
+                viewClass: options.component ? ComponentView : View
+            }, options || {}, {
+                layouts : getLayouts(inDir),
+                meta    : getMetadata(inDir, type, true),
+                pages   : getPages(inDir),
+                partials: getPartials(inDir)
+            });
+        } catch (ex) {
+            return callback(ex);
+        }
     }
 
     // Set a default asset path if one isn't specified in the metadata.
