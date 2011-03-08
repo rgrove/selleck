@@ -37,7 +37,7 @@ var fs        = require('fs'),
     themePartials = {},
 
     help = [
-        "Generates YUI user documentation, Mustache-style.",
+        "Selleck generates YUI user documentation, Mustache-style.",
         "",
         "Usage: selleck [options] [input path]",
         "",
@@ -49,6 +49,7 @@ var fs        = require('fs'),
         "                         changes while editing docs.",
         "  -t, --theme <path>     Use the specified theme instead of the default.",
         "  -h, --help             Display this help message.",
+        "  -v, --version          Display version information.",
         "",
         "Advanced Options:",
         "  --out-assets <path>    Copy all assets to this output path instead of the",
@@ -58,6 +59,13 @@ var fs        = require('fs'),
         "                         instead of the default (.html).",
         "  --out-meta <filename>  Write combined project and component JSON metadata to",
         "                         the specified filename.",
+        ""
+    ].join('\n'),
+
+    version = [
+        "Selleck 0.0.1-dev",
+        "Copyright (c) 2011 Yahoo! Inc. All rights reserved.",
+        "https://github.com/rgrove/selleck/",
         ""
     ].join('\n');
 
@@ -134,6 +142,14 @@ while ((arg = argv.shift())) {
     case '--theme':
     case '-t':
         options.theme = argv.shift();
+        break;
+
+    case '--version':
+    case '-v':
+        // See rant above re. forcing Node to flush stdout before exiting.
+        process.stdout.write(version);
+        while (!process.stdout.flush()) {};
+        process.exit();
         break;
 
     default:
