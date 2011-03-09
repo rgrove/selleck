@@ -1,16 +1,20 @@
 {
   "name"       : "selleck",
   "description": "Generator for YUI's mustache-based user documentation.",
-  "version"    : "0.0.1-dev",
-  "keywords"   : ["yui", "mustache", "docs"],
-  "homepage"   : "http://yuilibrary.com/",
+  "version"    : "0.1.0",
+  "keywords"   : ["yui", "mustache", "docs", "documentation"],
+  "homepage"   : "https://github.com/rgrove/selleck/",
   "author"     : "Ryan Grove <ryan@wonko.com> (http://wonko.com/)",
 
   "licenses": [
       {"type": "BSD", "url": "http://developer.yahoo.com/yui/license.html"}
   ],
 
-  "engines": ["node >=0.4.0"],
+  "repository": [
+    {"type": "git", "url": "git://github.com/rgrove/selleck.git"}
+  ],
+
+  "engines": ["node >=0.4.0 <0.5.0"],
 
   "dependencies": {
     "express" : "1.0.x",
