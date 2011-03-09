@@ -265,7 +265,7 @@ if (options.server) {
             log('Writing combined metadata to ' + options['out-meta'], 'info');
 
             meta = {
-                project: projectMeta,
+                project: util.merge(projectMeta, options.overrideMeta),
                 components: {}
             };
 
@@ -273,7 +273,13 @@ if (options.server) {
                 var data = selleck.getMetadata(component.path, 'component');
 
                 if (data && data.name) {
-                    meta.components[data.name] = data;
+                    meta.components[data.name] = util.merge(
+                        meta.project.componentDefaults || {},
+                        data,
+                        options.overrideMeta
+                    );
+
+                    delete meta.components[data.name].componentDefaults;
                 }
             });
 
