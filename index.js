@@ -58,7 +58,7 @@ exports.copyAssets = copyAssets;
 @method createOutputDir
 **/
 function createOutputDir(outDir) {
-    var stats = fileutils.statSync(outDir);
+    var stats = fileutils.lstatSync(outDir);
 
     if (stats) {
         if (!stats.isDirectory()) {
