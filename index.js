@@ -277,6 +277,7 @@ exports.log = log;
 **/
 function prepare(inDir, options, callback) {
     var compiled = {},
+        meta     = {},
         type     = options.component ? 'component' : 'project';
 
     if (options && options.skipLoad) {
@@ -290,6 +291,7 @@ function prepare(inDir, options, callback) {
             viewClass: options.component ? ComponentView : View
         }, options);
     } else {
+
         // Gather layouts, metadata, pages, and partials from the specified
         // input directory, then merge them into the provided options (if any).
         //
@@ -297,15 +299,31 @@ function prepare(inDir, options, callback) {
         // order to support a use case where global data are provided by the
         // caller and overridden by more specific component-level data gathered
         // from the input directory.
+        //
+        // The metadata inheritance chain looks like this:
+        //
+        //   - override metadata specified via CLI (highest precedence)
+        //   - component metadata (if this is a component)
+        //   - project-level component default metadata (if specified and this is a component)
+        //   - theme-level component default metadata (if specified and this is a component)
+        //   - project metadata
+        //   - theme metadata (lowest precedence)
+
+        if (options.component && options.meta.componentDefaults) {
+            meta = options.meta.componentDefaults;
+        }
+
         try {
-            options = util.merge({
-                viewClass: options.component ? ComponentView : View
-            }, options || {}, {
-                layouts : getLayouts(inDir),
-                meta    : getMetadata(inDir, type, true),
-                pages   : getPages(inDir),
-                partials: getPartials(inDir)
-            });
+            options = util.merge(
+                {viewClass: options.component ? ComponentView : View},
+                options || {},
+                {
+                    layouts : getLayouts(inDir),
+                    meta    : util.merge(meta, getMetadata(inDir, type, true)),
+                    pages   : getPages(inDir),
+                    partials: getPartials(inDir)
+                }
+            );
         } catch (ex) {
             return callback(ex);
         }
