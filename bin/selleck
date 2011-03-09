@@ -23,9 +23,10 @@ var fs        = require('fs'),
 
     // Default values for command line options.
     options  = {
-        'out'    : './docs',
-        'out-ext': '.html',
-        'theme'  : selleck.defaultTheme
+        'out'         : './docs',
+        'out-ext'     : '.html',
+        'overrideMeta': {},
+        'theme'       : selleck.defaultTheme
     },
 
     projectLayouts  = {},
@@ -43,6 +44,8 @@ var fs        = require('fs'),
         "Usage: selleck [options] [input path]",
         "",
         "Common Options:",
+        "  -m, --meta <filename>  Augment and override project/component metadata with",
+        "                         data in the specified file.",
         "  -o, --out <path>       Write generated files to this output path.",
         "  -p, --project <path>   Use the specified project path instead of searching for",
         "                         the project.",
@@ -88,6 +91,12 @@ while ((arg = argv.shift())) {
         process.stdout.write(help);
         while (!process.stdout.flush()) {};
         process.exit();
+        break;
+
+    case '--metadata':
+    case '--meta':
+    case '-m':
+        options.overrideMeta = JSON.parse(fs.readFileSync(argv.shift(), 'utf8'));
         break;
 
     case '--output':

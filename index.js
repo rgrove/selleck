@@ -311,6 +311,10 @@ function prepare(inDir, options, callback) {
         }
     }
 
+    // Mix in the override metadata, if any. It takes precedence over everything
+    // else.
+    util.mix(options.meta, options.overrideMeta);
+
     // Set a default asset path if one isn't specified in the metadata.
     if (!options.meta.projectAssets) {
         options.meta.projectAssets = options.component ? '../assets' : 'assets';
