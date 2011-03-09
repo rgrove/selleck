@@ -8,6 +8,11 @@ evolving rapidly, but you may find it useful.
 See <http://rgrove.github.com/selleck/> for detailed information and usage
 instructions, as well as an example of the kinds of docs Selleck generates.
 
+If you'd like to see more, [check out this sample][ac-docs] of the YUI 3
+AutoComplete docs and examples, generated using Selleck.
+
+[ac-docs]:http://dl.dropbox.com/u/131998/yui/docs/autocomplete/index.html
+
 
 License
 -------
