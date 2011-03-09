@@ -34,6 +34,7 @@ var fs        = require('fs'),
     projectPartials = {},
 
     themeLayouts  = {},
+    themeMeta     = {},
     themePartials = {},
 
     help = [
@@ -174,6 +175,7 @@ if (options.server) {
     // Load theme layouts and partials, and copy theme assets to the output dir,
     // if there are any.
     themeLayouts  = selleck.getLayouts(options.theme);
+    themeMeta     = selleck.getMetadata(options.theme, 'theme');
     themePartials = selleck.getPartials(options.theme);
 
     selleck.copyAssets(fsPath.join(options.theme, 'assets'),
@@ -190,7 +192,7 @@ if (options.server) {
 
     if (docs.project) {
         projectLayouts  = util.merge(themeLayouts, selleck.getLayouts(docs.project.path));
-        projectMeta     = selleck.getMetadata(docs.project.path, 'project');
+        projectMeta     = util.merge(themeMeta, selleck.getMetadata(docs.project.path, 'project'));
         projectPartials = util.merge(themePartials, selleck.getPartials(docs.project.path));
         projectPages    = selleck.getPages(docs.project.path);
 
