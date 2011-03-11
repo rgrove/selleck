@@ -1,31 +1,31 @@
 {
-  "name"       : "selleck",
-  "description": "Generator for YUI's mustache-based user documentation.",
-  "version"    : "0.1.1dev",
-  "keywords"   : ["yui", "mustache", "docs", "documentation"],
-  "homepage"   : "https://github.com/rgrove/selleck/",
-  "author"     : "Ryan Grove <ryan@wonko.com> (http://wonko.com/)",
+    "name"       : "selleck",
+    "description": "Generator for YUI's mustache-based user documentation.",
+    "version"    : "0.1.1",
+    "keywords"   : ["yui", "mustache", "docs", "documentation"],
+    "homepage"   : "https://github.com/rgrove/selleck/",
+    "author"     : "Ryan Grove <ryan@wonko.com> (http://wonko.com/)",
 
-  "licenses": [
-      {"type": "BSD", "url": "http://developer.yahoo.com/yui/license.html"}
-  ],
+    "licenses": [
+        {"type": "BSD", "url": "http://developer.yahoo.com/yui/license.html"}
+    ],
 
-  "repository": [
-    {"type": "git", "url": "git://github.com/rgrove/selleck.git"}
-  ],
+    "repository": [
+        {"type": "git", "url": "git://github.com/rgrove/selleck.git"}
+    ],
 
-  "engines": [
-    "node >=0.4.0 <0.5.0",
-    "npm >=0.3.1"
-  ],
+    "engines": [
+        "node >=0.4.0 <0.5.0",
+        "npm >=0.3.1"
+    ],
 
-  "dependencies": {
-    "express" : ">=2.0.0beta2 <=2.1.0",
-    "mustache": "0.3.x"
-  },
+    "dependencies": {
+        "express" : ">=2.0.0beta2 <=2.1.0",
+        "mustache": "0.3.x"
+    },
 
-  "main": "index",
-  "bin" : {"selleck": "./bin/selleck"},
+    "main": "index",
+    "bin" : {"selleck": "./bin/selleck"},
 
-  "directories": {"lib": "./lib"}
+    "directories": {"lib": "./lib"}
 }
