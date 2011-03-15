@@ -1,6 +1,12 @@
 Selleck History
 ===============
 
+0.1.2 (git)
+-----------
+
+* Don't merge project pages into components.
+
+
 0.1.1 (2011-03-11)
 ------------------
 

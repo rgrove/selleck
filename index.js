@@ -320,7 +320,6 @@ function prepare(inDir, options, callback) {
                 {
                     layouts : getLayouts(inDir),
                     meta    : util.merge(meta, getMetadata(inDir, type, true)),
-                    pages   : getPages(inDir),
                     partials: getPartials(inDir)
                 }
             );
@@ -328,6 +327,9 @@ function prepare(inDir, options, callback) {
             return callback(ex);
         }
     }
+
+    // Pages are never merged.
+    options.pages = getPages(inDir);
 
     // Mix in the override metadata, if any. It takes precedence over everything
     // else.
