@@ -1,7 +1,7 @@
 {
     "name"       : "selleck",
     "description": "Generator for YUI's mustache-based user documentation.",
-    "version"    : "0.1.1",
+    "version"    : "0.1.2dev",
     "keywords"   : ["yui", "mustache", "docs", "documentation"],
     "homepage"   : "https://github.com/rgrove/selleck/",
     "author"     : "Ryan Grove <ryan@wonko.com> (http://wonko.com/)",

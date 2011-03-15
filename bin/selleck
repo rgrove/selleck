@@ -67,7 +67,7 @@ var fs        = require('fs'),
     ].join('\n'),
 
     version = [
-        "Selleck 0.1.1",
+        "Selleck 0.1.2dev",
         "Copyright (c) 2011 Yahoo! Inc. All rights reserved.",
         "https://github.com/rgrove/selleck/",
         ""
