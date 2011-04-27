@@ -5,6 +5,7 @@ Selleck History
 -----------
 
 * Don't merge project pages into components.
+* Page title format tweaks.
 
 
 0.1.1 (2011-03-11)
