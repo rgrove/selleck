@@ -1,8 +1,8 @@
 Selleck History
 ===============
 
-0.1.2 (git)
------------
+0.1.2 (2011-04-28)
+------------------
 
 * Don't merge project pages into components.
 * Page title format tweaks.

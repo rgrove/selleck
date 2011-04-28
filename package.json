@@ -1,7 +1,7 @@
 {
     "name"       : "selleck",
     "description": "Generator for YUI's mustache-based user documentation.",
-    "version"    : "0.1.2dev",
+    "version"    : "0.1.2",
     "keywords"   : ["yui", "mustache", "docs", "documentation"],
     "homepage"   : "https://github.com/rgrove/selleck/",
     "author"     : "Ryan Grove <ryan@wonko.com> (http://wonko.com/)",
@@ -16,7 +16,7 @@
 
     "engines": [
         "node >=0.4.0 <0.5.0",
-        "npm >=0.3.1"
+        "npm >=0.3.1 <1.0.0"
     ],
 
     "dependencies": {
