@@ -4,6 +4,10 @@ Copyright (c) 2011 Yahoo! Inc.
 Licensed under the BSD License.
 */
 
+/**
+@module selleck
+**/
+
 var fs        = require('fs'),
     path      = require('path'),
     mustache  = require('mustache'),
@@ -28,12 +32,15 @@ exports.defaultTheme = path.join(__dirname, 'themes', 'default');
 // -- Public Functions ---------------------------------------------------------
 
 /**
+Copies static assets recursively from one directory to another.
+
 @method copyAssets
 @param {String} from Directory to copy from.
 @param {String} to Directory to copy to.
-@param {bool} [deleteFirst=false]
-@callback
-  @param {Error} err
+@param {bool} [deleteFirst=false] If `true` and _to_ already exists, it (and all
+  its contents) will be deleted first.
+@param {callback}
+  @param {Error} callback.err
 **/
 function copyAssets() {
     var args        = Array.prototype.slice.call(arguments),
@@ -55,7 +62,10 @@ function copyAssets() {
 exports.copyAssets = copyAssets;
 
 /**
+Creates the specified output directory if it doesn't already exist.
+
 @method createOutputDir
+@param {String} outDir Output directory.
 **/
 function createOutputDir(outDir) {
     var stats = fileutils.lstatSync(outDir);
@@ -113,7 +123,7 @@ exports.findDocs = findDocs;
 @param {String} inDir Input directory containing docs and assets to generate.
 @param {Object} options Generation options.
 @param {callback}
-  @param {Error} err
+  @param {Error} callback.err
 **/
 function generate(inDir, options, callback) {
     prepare(inDir, options, function (err, options) {
@@ -226,7 +236,11 @@ function getPartials(dir) {
 exports.getPartials = getPartials;
 
 /**
+Returns `true` if _dir_ appears to be a Selleck component directory.
+
 @method isComponentDirectory
+@param {String} dir Directory.
+@return {Boolean}
 **/
 function isComponentDirectory(dir) {
     var metaStats, indexStats;
@@ -243,7 +257,11 @@ function isComponentDirectory(dir) {
 exports.isComponentDirectory = isComponentDirectory;
 
 /**
+Returns `true` if _dir_ appears to be a Selleck project directory.
+
 @method isProjectDirectory
+@param {String} dir Directory.
+@return {Boolean}
 **/
 function isProjectDirectory(dir) {
     var metaStats, indexStats;
