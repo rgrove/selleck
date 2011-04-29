@@ -8,12 +8,12 @@ Licensed under the BSD License.
 @module selleck
 **/
 
-var fs        = require('fs'),
-    path      = require('path'),
-    mustache  = require('mustache'),
+var fs         = require('fs'),
+    path       = require('path'),
+    Handlebars = require('./support/handlebars/handlebars').Handlebars,
 
-    fileutils = require('./lib/fileutils'),
-    util      = require('./lib/util'), // Selleck's util, not Node's util.
+    fileutils  = require('./lib/fileutils'),
+    util       = require('./lib/util'), // Selleck's util, not Node's util.
 
     ComponentView = exports.ComponentView = require('./lib/view/component'),
     Higgins       = exports.Higgins       = require('./lib/higgins'),
@@ -388,11 +388,7 @@ Renders the specified template source.
   @param {String} html Rendered HTML.
 **/
 function render(source, view, layout, partials, callback) {
-    var html = [];
-
-    function buffer(line) {
-        html.push(line);
-    }
+    var html, template;
 
     // Allow callback as third or fourth param.
     if (typeof partials === 'function') {
@@ -405,16 +401,18 @@ function render(source, view, layout, partials, callback) {
 
     try {
         if (layout) {
-            mustache.to_html(layout, view, util.merge(partials || {},
-                    {layout_content: source}), buffer);
+            template = Handlebars.compile(layout);
+            partials = util.merge(partials || {}, {layout_content: source});
         } else {
-            mustache.to_html(source, view, partials || {}, buffer);
+            template = Handlebars.compile(source);
         }
+
+        html = template(view, null, partials);
     } catch (ex) {
         return callback(ex);
     }
 
-    callback(null, Higgins.render(html.join('\n')));
+    callback(null, Higgins.render(html));
 }
 exports.render = render;
 
