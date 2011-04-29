@@ -20,12 +20,10 @@
     ],
 
     "dependencies": {
-        "express" : ">=2.0.0beta2 <=2.1.0",
+        "express" : "2.3.x",
         "mustache": "0.3.x"
     },
 
     "main": "index",
-    "bin" : {"selleck": "./bin/selleck"},
-
-    "directories": {"lib": "./lib"}
+    "bin" : {"selleck": "./bin/selleck"}
 }
