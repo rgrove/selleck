@@ -1,10 +1,11 @@
 Selleck History
 ===============
 
-0.1.3 (git)
------------
+0.1.3 (2011-04-29)
+------------------
 
 * Replace Mustache.js with Handlebars.js.
+* npm 1.0 compatibility (I hope).
 
 
 0.1.2 (2011-04-28)
