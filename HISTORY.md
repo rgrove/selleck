@@ -1,6 +1,12 @@
 Selleck History
 ===============
 
+0.1.4 (git)
+------------------
+
+* Patch Handlebars to allow backslashes in content.
+
+
 0.1.3 (2011-04-29)
 ------------------
 
