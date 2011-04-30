@@ -17,15 +17,16 @@ Install Selleck using npm:
 </p>
 
 ```terminal
-$ npm install selleck
+$ npm install selleck -g
 ```
 
 <p>
-Or just clone the <a href="https://github.com/rgrove/selleck/">GitHub repo</a>:
+Or clone the <a href="https://github.com/rgrove/selleck/">GitHub repo</a> to install the latest development version:
 </p>
 
 ```terminal
 $ git clone git://github.com/rgrove/selleck.git
+$ cd selleck && npm install -g
 ```
 
 <h2>Overview</h2>
@@ -96,7 +97,7 @@ Project metadata files must contain a `projectName` property, and component meta
     "description": "Provides automatic input completion or suggestions for text input fields and textareas.",
     "author"     : "rgrove",
 
-    "tags": ["widget", "beta", "autocomplete"],
+    "tags": ["widget", "autocomplete"],
     "use" : ["autocomplete"]
 }
 ```

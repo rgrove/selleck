@@ -64,13 +64,6 @@ var fs        = require('fs'),
         "  --out-meta <filename>  Write combined project and component JSON metadata to",
         "                         the specified filename.",
         ""
-    ].join('\n'),
-
-    version = [
-        "Selleck 0.1.3",
-        "Copyright (c) 2011 Yahoo! Inc. All rights reserved.",
-        "https://github.com/rgrove/selleck/",
-        ""
     ].join('\n');
 
 // Process command line parameters.
@@ -156,6 +149,15 @@ while ((arg = argv.shift())) {
 
     case '--version':
     case '-v':
+        pkg = JSON.parse(fs.readFileSync(__dirname + '/../package.json', 'utf-8'));
+
+        version = [
+            "Selleck " + pkg.version,
+            pkg.copyright,
+            pkg.homepage,
+            ""
+        ].join('\n');
+
         // See rant above re. forcing Node to flush stdout before exiting.
         process.stdout.write(version);
         while (!process.stdout.flush()) {};

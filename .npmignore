@@ -1,2 +1,6 @@
-._*
 .git/
+contrib/
+node_modules/
+tmp/
+._*
+.DS_Store

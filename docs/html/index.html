@@ -3,17 +3,20 @@
 <head>
     <meta charset="utf-8">
     <title>Selleck User Guide</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.3.0/build/cssgrids/grids-min.css">
+    <link rel="stylesheet" href="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;3.3.0&#x2F;build&#x2F;cssgrids&#x2F;grids-min.css">
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/vendor/prettify/prettify-min.css">
-    <script src="http://yui.yahooapis.com/combo?3.3.0/build/yui/yui-min.js&amp;3.3.0/build/loader/loader-min.js"></script>
+    <script src="http:&#x2F;&#x2F;yui.yahooapis.com&#x2F;combo?3.3.0&#x2F;build&#x2F;yui&#x2F;yui-min.js&amp;3.3.0&#x2F;build&#x2F;loader&#x2F;loader-min.js"></script>
 </head>
 <body>
 
 <div id="doc">
     <h1>Selleck User Guide</h1>
 
-            <a href="#toc" class="jump">Jump to Table of Contents</a>
+    
+        <a href="#toc" class="jump">Jump to Table of Contents</a>
+    
+
     <div class="yui3-g">
         <div id="main" class="yui3-u">
             <div class="content"><div class="intro">
@@ -34,14 +37,15 @@ Selleck requires <a href="http://nodejs.org/">Node.js</a> 0.4.0 or greater. It a
 Install Selleck using npm:
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>npm install selleck</pre>
+<pre class="terminal"><span class="noselect">$ </span>npm install selleck -g</pre>
 
 
 <p>
-Or just clone the <a href="https://github.com/rgrove/selleck/">GitHub repo</a>:
+Or clone the <a href="https://github.com/rgrove/selleck/">GitHub repo</a> to install the latest development version:
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>git clone git:&#x2F;&#x2F;github.com&#x2F;rgrove&#x2F;selleck.git</pre>
+<pre class="terminal"><span class="noselect">$ </span>git clone git:&#x2F;&#x2F;github.com&#x2F;rgrove&#x2F;selleck.git
+<span class="noselect">$ </span>cd selleck &amp;&amp; npm install -g</pre>
 
 
 <h2 id="overview">Overview</h2>
@@ -110,7 +114,7 @@ Project metadata files must contain a <code>projectName</code> property, and com
     &quot;description&quot;: &quot;Provides automatic input completion or suggestions for text input fields and textareas.&quot;,
     &quot;author&quot;     : &quot;rgrove&quot;,
 
-    &quot;tags&quot;: [&quot;widget&quot;, &quot;beta&quot;, &quot;autocomplete&quot;],
+    &quot;tags&quot;: [&quot;widget&quot;, &quot;autocomplete&quot;],
     &quot;use&quot; : [&quot;autocomplete&quot;]
 }</pre>
 
@@ -420,7 +424,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </div>
 
         <div id="sidebar" class="yui3-u">
-                            <div id="toc" class="sidebox">
+            
+                <div id="toc" class="sidebox">
                     <div class="hd">
                         <h2 class="no-toc">Table of Contents</h2>
                     </div>
@@ -484,7 +489,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </ul>
                     </div>
                 </div>
-            </div>
+            
+
+            
+        </div>
     </div>
 </div>
 
