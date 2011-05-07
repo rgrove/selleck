@@ -191,11 +191,7 @@ if (options.server) {
 
     selleck.copyAssets(fsPath.join(options.theme, 'assets'),
             options['out-assets'], true, function (err) {
-
-        if (err) {
-            log(err.message, 'error');
-            process.exit(1);
-        }
+        if (err) { throw err; }
     });
 
     // Traverse the root path and look for documentation directories.
@@ -256,10 +252,7 @@ if (options.server) {
     }
 
     function finish(err) {
-        if (err) {
-            log(err, 'error');
-            return;
-        }
+        if (err) { throw err; }
 
         var meta;
 
@@ -287,7 +280,7 @@ if (options.server) {
 
             fs.writeFile(options['out-meta'], JSON.stringify(meta), 'utf8', function (err) {
                 if (err) {
-                    log(err, 'error');
+                    throw err;
                 } else {
                     reallyFinish();
                 }
