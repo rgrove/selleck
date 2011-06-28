@@ -23,7 +23,7 @@ var fs        = require('fs'),
 
     // Default values for command line options.
     options  = {
-        'out'         : './docs',
+        'out'         : './build_docs',
         'out-ext'     : '.html',
         'overrideMeta': {},
         'theme'       : selleck.defaultTheme
