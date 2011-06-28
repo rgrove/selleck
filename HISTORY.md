@@ -1,32 +1,37 @@
 Selleck History
 ===============
 
-0.1.4 (git)
+0.1.4 (2011-06-28)
 ------------------
 
-* Patch Handlebars to allow backslashes in content.
+* Changed the default doc output directory name to "build_docs", since "docs"
+  tended to result in people accidentally overwriting their source assets when
+  they ran Selleck from the wrong directory.
+* Updated to latest upstream Handlebars.js from git, which now includes all
+  the bug fixes that were in Selleck's customized Handlebars build.
+* Updated Express dependency range to allow 2.4.x.
 
 
 0.1.3 (2011-04-29)
 ------------------
 
-* Replace Mustache.js with Handlebars.js.
+* Replaced Mustache.js with Handlebars.js.
 * npm 1.0 compatibility (I hope).
 
 
 0.1.2 (2011-04-28)
 ------------------
 
-* Don't merge project pages into components.
+* Project pages are no longer merged into components.
 * Page title format tweaks.
 
 
 0.1.1 (2011-03-11)
 ------------------
 
-* Use Express 2.0.0.
-* Merge override metadata into global metadata output.
-* Throw errors in server mode for easier debugging. [Dav Glass]
+* Updated Express dependency to 2.0.0.
+* Override metadata is now merged into global metadata output.
+* Server mode now throws errors for easier debugging. [Dav Glass]
 
 
 0.1.0 (2011-03-08)

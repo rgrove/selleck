@@ -2,7 +2,7 @@
     "name"       : "selleck",
     "description": "Generator for YUI's mustache-based user documentation.",
 
-    "version"    : "0.1.4-git",
+    "version"    : "0.1.4",
     "homepage"   : "https://github.com/rgrove/selleck/",
     "author"     : "Ryan Grove <ryan@wonko.com> (http://wonko.com/)",
     "copyright"  : "Copyright (c) 2011 Yahoo! Inc. All rights reserved.",
@@ -23,7 +23,7 @@
     ],
 
     "dependencies": {
-        "express" : "2.3.x"
+        "express" : ">=2.3.0 <2.5.0"
     },
 
     "main": "index",
