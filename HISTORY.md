@@ -1,6 +1,13 @@
 Selleck History
 ===============
 
+0.1.5 (git)
+-----------
+
+* Views for non-component and non-example pages now have a boolean `page`
+  property that's set to `true` (examples similarly have an `example` property).
+
+
 0.1.4 (2011-06-28)
 ------------------
 

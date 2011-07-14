@@ -1,13 +1,13 @@
 {
     "name"       : "selleck",
-    "description": "Generator for YUI's mustache-based user documentation.",
+    "description": "Generator for YUI's Handlebars-based user documentation.",
 
-    "version"    : "0.1.4",
+    "version"    : "0.1.5-git",
     "homepage"   : "https://github.com/rgrove/selleck/",
     "author"     : "Ryan Grove <ryan@wonko.com> (http://wonko.com/)",
     "copyright"  : "Copyright (c) 2011 Yahoo! Inc. All rights reserved.",
 
-    "keywords"   : ["yui", "mustache", "docs", "documentation"],
+    "keywords"   : ["yui", "handlebars", "mustache", "docs", "documentation"],
 
     "licenses": [
         {"type": "BSD", "url": "http://developer.yahoo.com/yui/license.html"}
