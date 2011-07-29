@@ -228,6 +228,11 @@ if (options.server) {
             validator: componentValidator
         }), stack.add(function (err, result) {
             if (err) { throw err; }
+
+            if (result.meta.examples) {
+                result.meta.hasOwnExamples = true;
+            }
+
             components[result.meta.name] = result;
         }));
     });
@@ -247,6 +252,8 @@ if (options.server) {
 
                     if (module && moduleName !== example.componentName
                             && !example.inherited) {
+
+                        module.meta.hasInheritedExamples = true;
 
                         module.meta.examples || (module.meta.examples = []);
                         module.meta.examples.push(util.merge(example, {

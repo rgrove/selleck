@@ -35,7 +35,7 @@
                 </div>
             {{/hideTableOfContents}}
 
-            {{#if examples}}
+            {{#if hasOwnExamples}}
                 <div class="sidebox">
                     <div class="hd">
                         <h2 class="no-toc">Examples</h2>
@@ -44,9 +44,31 @@
                     <div class="bd">
                         <ul class="examples">
                             {{#examples}}
-                                <li data-description="{{description}}">
-                                    <a href="../{{componentName}}/{{name}}.html">{{displayName}}</a>
-                                </li>
+                                {{#unless inherited}}
+                                    <li data-description="{{description}}">
+                                        <a href="{{name}}.html">{{displayName}}</a>
+                                    </li>
+                                {{/unless}}
+                            {{/examples}}
+                        </ul>
+                    </div>
+                </div>
+            {{/if}}
+
+            {{#if hasInheritedExamples}}
+                <div class="sidebox">
+                    <div class="hd">
+                        <h2 class="no-toc">Examples That Use This Component</h2>
+                    </div>
+
+                    <div class="bd">
+                        <ul class="examples">
+                            {{#examples}}
+                                {{#if inherited}}
+                                    <li data-description="{{description}}">
+                                        <a href="../{{componentName}}/{{name}}.html">{{displayName}}</a>
+                                    </li>
+                                {{/if}}
                             {{/examples}}
                         </ul>
                     </div>
