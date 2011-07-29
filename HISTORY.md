@@ -11,6 +11,8 @@ Selleck History
   of the partially-merged metadata that was included before.
 * Views for non-component and non-example pages now have a boolean `page`
   property that's set to `true` (examples similarly have an `example` property).
+* Added a --dump-views option that causes view data to be written to a .json
+  file alongside each generated page.
 * Fixed a bug that prevented symlinked input directories from being recognized.
 
 

@@ -66,6 +66,9 @@ var fs        = require('fs'),
         "  -v, --version          Display version information.",
         "",
         "Advanced Options:",
+        "  --dump-views           Write a .json file alongside every generated page that",
+        "                         contains the exact view metadata (minus any helper",
+        "                         functions) that was used to generate that page.",
         "  --out-assets <path>    Copy all assets to this output path instead of the",
         "                         default. Component assets will be copied to",
         "                         subdirectories named for the component.",
@@ -86,6 +89,10 @@ while ((arg = argv.shift())) {
     }
 
     switch (arg) {
+    case '--dump-views':
+        options.dumpViews = true;
+        break;
+
     case '--help':
     case '-h':
         // WTF. This is seriously the only way I've been able to figure out to
