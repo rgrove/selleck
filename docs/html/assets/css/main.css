@@ -91,7 +91,7 @@ h5, h6 { font-size: 107.692%; }
 
 /* -- Code and examples ----------------------------------------------------- */
 code, kbd, pre, samp {
-    font-family: Menlo, 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Consolas', 'Monaco', fixed;
+    font-family: Menlo, 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Consolas', 'Inconsolata', 'Monaco', 'Courier New', fixed;
     font-size: 92.308%;
     line-height: 1.35;
 }
@@ -112,19 +112,19 @@ table code, table kbd, table samp,
     padding: 0;
 }
 
-pre.code, pre.terminal {
+#doc pre.code, #doc pre.terminal {
     overflow-x: auto;
     *overflow-x: scroll;
     padding: 0.3em 0.6em;
 }
 
-pre.code {
+#doc pre.code {
     background: #f8f8f8;
     border: 1px solid #ececec;
     border-left: 5px solid #e2e2e2;
 }
 
-pre.terminal {
+#doc pre.terminal {
     background: #F0EFFC;
     border: 1px solid #D0CBFB;
     border-left: 5px solid #D0CBFB;
