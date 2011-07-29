@@ -264,7 +264,12 @@ if (options.server) {
             });
         });
 
-        project.components = components;
+        project.meta.components = util.values(components).sort(function (a, b) {
+            var aName = a.meta.displayName.toLowerCase(),
+                bName = b.meta.displayName.toLowerCase();
+
+            return aName < bName ? -1 : (aName > bName ? 1 : 0);
+        });
 
         generateProject();
     });
@@ -291,12 +296,12 @@ if (options.server) {
     function generateComponents(err) {
         if (err) { return finish(err); }
 
-        var toGenerate = util.size(project.components);
+        var toGenerate = util.size(components);
 
         if (!toGenerate) { return finish(); }
 
         // Generate component docs.
-        util.each(project.components, function(component) {
+        util.each(components, function(component) {
             var path = component.path;
 
             log('Generating component docs for ' + path, 'info');
@@ -329,7 +334,7 @@ if (options.server) {
                 project   : util.merge(project.meta, options.overrideMeta)
             };
 
-            util.each(project.components, function (component) {
+            util.each(components, function (component) {
                 var data = util.merge(component.meta);
 
                 delete data.componentDefaults;
