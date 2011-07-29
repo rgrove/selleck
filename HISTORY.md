@@ -11,6 +11,7 @@ Selleck History
   of the partially-merged metadata that was included before.
 * Views for non-component and non-example pages now have a boolean `page`
   property that's set to `true` (examples similarly have an `example` property).
+* Fixed a bug that prevented symlinked input directories from being recognized.
 
 
 0.1.4 (2011-06-28)
