@@ -29,14 +29,24 @@ var fs        = require('fs'),
         'theme'       : selleck.defaultTheme
     },
 
-    projectLayouts  = {},
-    projectMeta     = {},
-    projectPages    = {},
-    projectPartials = {},
+    components = {},
 
-    themeLayouts  = {},
-    themeMeta     = {},
-    themePartials = {},
+    project = {
+        layouts   : {},
+        meta      : {},
+        pages     : {},
+        partials  : {},
+        project   : true,
+        validator : projectValidator
+    },
+
+    stack = new util.Stack(),
+
+    theme = {
+        layouts : {},
+        meta    : {},
+        partials: {}
+    },
 
     help = [
         "Selleck generates YUI user documentation, Mustache-style.",
@@ -80,7 +90,7 @@ while ((arg = argv.shift())) {
     case '-h':
         // WTF. This is seriously the only way I've been able to figure out to
         // make Node reliably flush to stdout before exiting. It's ridiculous.
-        // This is stupid. 
+        // This is stupid.
         process.stdout.write(help);
         while (!process.stdout.flush()) {};
         process.exit();
@@ -180,64 +190,105 @@ if (options.server) {
     // If running as a server, start the server instead of continuing.
     require('selleck/lib/server')(options);
 } else {
-    selleck.createOutputDir(options.out);
-    selleck.createOutputDir(options['out-assets']);
-
     // Load theme layouts and partials, and copy theme assets to the output dir,
     // if there are any.
-    themeLayouts  = selleck.getLayouts(options.theme);
-    themeMeta     = selleck.getMetadata(options.theme, 'theme');
-    themePartials = selleck.getPartials(options.theme);
-
-    selleck.copyAssets(fsPath.join(options.theme, 'assets'),
-            options['out-assets'], true, function (err) {
-        if (err) { throw err; }
-    });
+    theme.layouts  = selleck.getLayouts(options.theme);
+    theme.meta     = selleck.getMetadata(options.theme, 'theme');
+    theme.partials = selleck.getPartials(options.theme);
 
     // Traverse the root path and look for documentation directories.
     docs = selleck.findDocs(options.rootPath, docs);
 
     if (docs.project) {
-        projectLayouts  = util.merge(themeLayouts, selleck.getLayouts(docs.project.path));
-        projectMeta     = util.merge(themeMeta, selleck.getMetadata(docs.project.path, 'project'));
-        projectPartials = util.merge(themePartials, selleck.getPartials(docs.project.path));
-        projectPages    = selleck.getPages(docs.project.path);
+        log('Parsing project: ' + docs.project.path, 'info');
 
-        log('Generating project docs for ' + docs.project.path, 'info');
+        project.layouts  = util.merge(theme.layouts, selleck.getLayouts(docs.project.path));
+        project.meta     = util.merge(theme.meta, selleck.getMetadata(docs.project.path, 'project'));
+        project.partials = util.merge(theme.partials, selleck.getPartials(docs.project.path));
+        project.pages    = selleck.getPages(docs.project.path);
+    }
 
-        selleck.generate(docs.project.path, util.merge(options, {
-            layouts  : projectLayouts,
-            meta     : projectMeta,
-            partials : projectPartials,
-            pages    : projectPages,
-            project  : true,
-            skipLoad : true, // Don't reload stuff from the input dir.
-            validator: projectValidator
-        }), generateComponents);
-    } else {
-        generateComponents();
+    log('Parsing components', 'info');
+
+    // Initial pass to load all component info.
+    docs.components.forEach(function(component, index) {
+        var path = component.path;
+
+        selleck.prepare(path, util.merge(options, project, {
+            component: true,
+            index    : index,
+            path     : path,
+            validator: componentValidator
+        }), stack.add(function (err, result) {
+            if (err) { throw err; }
+            components[result.meta.name] = result;
+        }));
+    });
+
+    // Second pass to cross-link examples.
+    stack.done(function () {
+        util.each(components, function (component) {
+            if (!component.meta.examples) { return; }
+
+            component.meta.examples.forEach(function (example) {
+                example.componentName || (example.componentName = component.meta.name);
+
+                if (!example.modules) { return; }
+
+                example.modules.forEach(function (moduleName) {
+                    var module = components[moduleName];
+
+                    if (module && moduleName !== example.componentName
+                            && !example.inherited) {
+
+                        module.meta.examples || (module.meta.examples = []);
+                        module.meta.examples.push(util.merge(example, {
+                            inherited: true
+                        }));
+                    }
+                });
+            });
+        });
+
+        project.components = components;
+
+        generateProject();
+    });
+
+    function generateProject() {
+        selleck.createOutputDir(options.out);
+        selleck.createOutputDir(options['out-assets']);
+
+        selleck.copyAssets(fsPath.join(options.theme, 'assets'),
+                options['out-assets'], true, function (err) {
+            if (err) { throw err; }
+        });
+
+        if (docs.project) {
+            log('Generating project docs for ' + docs.project.path, 'info');
+
+            selleck.generate(docs.project.path, util.merge(options, project,
+                    {skipLoad: true}), generateComponents);
+        } else {
+            generateComponents();
+        }
     }
 
     function generateComponents(err) {
         if (err) { return finish(err); }
 
-        var toGenerate = docs.components.length;
+        var toGenerate = util.size(project.components);
+
         if (!toGenerate) { return finish(); }
 
         // Generate component docs.
-        docs.components.forEach(function(component) {
+        util.each(project.components, function(component) {
             var path = component.path;
 
             log('Generating component docs for ' + path, 'info');
 
-            selleck.generate(path, util.merge(options, {
-                component: true,
-                layouts  : projectLayouts,
-                meta     : projectMeta,
-                partials : projectPartials,
-                pages    : projectPages,
-                validator: componentValidator
-            }), finishComponent);
+            selleck.generate(path, util.merge(options, component,
+                    {skipLoad: true}), finishComponent);
         });
 
         function finishComponent(err) {
@@ -260,25 +311,18 @@ if (options.server) {
             log('Writing combined metadata to ' + options['out-meta'], 'info');
 
             meta = {
-                project: util.merge(projectMeta, options.overrideMeta),
-                components: {}
+                components: {},
+                project   : util.merge(project.meta, options.overrideMeta)
             };
 
-            docs.components.forEach(function (component) {
-                var data = selleck.getMetadata(component.path, 'component');
+            util.each(project.components, function (component) {
+                var data = util.merge(component.meta);
 
-                if (data && data.name) {
-                    meta.components[data.name] = util.merge(
-                        meta.project.componentDefaults || {},
-                        data,
-                        options.overrideMeta
-                    );
-
-                    delete meta.components[data.name].componentDefaults;
-                }
+                delete data.componentDefaults;
+                meta.components[component.meta.name] = data;
             });
 
-            fs.writeFile(options['out-meta'], JSON.stringify(meta), 'utf8', function (err) {
+            fs.writeFile(options['out-meta'], JSON.stringify(meta, null, 2), 'utf8', function (err) {
                 if (err) {
                     throw err;
                 } else {

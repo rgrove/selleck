@@ -4,6 +4,11 @@ Selleck History
 0.1.5 (git)
 -----------
 
+* All metadata is now parsed before assets are copied and pages are generated.
+* Shared examples are now displayed in the example list for all components
+  listed in the example's "modules" array.
+* Combined metadata output now includes fully-merged component metadata instead
+  of the partially-merged metadata that was included before.
 * Views for non-component and non-example pages now have a boolean `page`
   property that's set to `true` (examples similarly have an `example` property).
 

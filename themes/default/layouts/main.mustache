@@ -44,7 +44,9 @@
                     <div class="bd">
                         <ul class="examples">
                             {{#examples}}
-                                <li data-description="{{description}}"><a href="{{name}}.html">{{displayName}}</a></li>
+                                <li data-description="{{description}}">
+                                    <a href="../{{componentName}}/{{name}}.html">{{displayName}}</a>
+                                </li>
                             {{/examples}}
                         </ul>
                     </div>
