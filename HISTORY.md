@@ -1,8 +1,8 @@
 Selleck History
 ===============
 
-0.1.5 (git)
------------
+0.1.5 (2011-07-29)
+------------------
 
 * All metadata is now parsed before assets are copied and pages are generated.
 * Shared examples are now displayed in the example list for all components
