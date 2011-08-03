@@ -1,6 +1,13 @@
 Selleck History
 ===============
 
+0.1.6 (git)
+-----------
+
+* Fixed a bug that caused the hasOwnExamples property to be set to true even if
+  a component only had inherited examples.
+
+
 0.1.5 (2011-07-29)
 ------------------
 

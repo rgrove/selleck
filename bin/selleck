@@ -230,7 +230,9 @@ if (options.server) {
             if (err) { throw err; }
 
             if (result.meta.examples) {
-                result.meta.hasOwnExamples = true;
+                result.meta.hasOwnExamples = result.meta.examples.some(function (example) {
+                    return !example.inherited;
+                });
             }
 
             components[result.meta.name] = result;
