@@ -2,7 +2,7 @@
     "name"       : "selleck",
     "description": "Generator for YUI's Handlebars-based user documentation.",
 
-    "version"    : "0.1.6-git",
+    "version"    : "0.1.6",
     "homepage"   : "https://github.com/rgrove/selleck/",
     "author"     : "Ryan Grove <ryan@wonko.com> (http://wonko.com/)",
     "copyright"  : "Copyright (c) 2011 Yahoo! Inc. All rights reserved.",

@@ -1,12 +1,13 @@
 Selleck History
 ===============
 
-0.1.6 (git)
------------
+0.1.6 (2011-09-27)
+------------------
 
 * Fixed a bug that caused the hasOwnExamples property to be set to true even if
   a component only had inherited examples.
-
+* Fixed a bug that caused component override metadata to be merged into project
+  metadata.
 
 0.1.5 (2011-07-29)
 ------------------
