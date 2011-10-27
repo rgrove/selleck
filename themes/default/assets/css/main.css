@@ -25,7 +25,7 @@ html {
 }
 
 body {
-    font: 13px/1.4 'Lucida Grande', 'Lucida Sans Unicode', 'DejaVu Sans', 'Bitstream Vera Sans', 'Helvetica', 'Arial', sans-serif;
+    font: 13px/1.4 Helvetica, 'DejaVu Sans', 'Bitstream Vera Sans', Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
@@ -37,6 +37,12 @@ a {
 }
 
 a:hover { text-decoration: underline; }
+a:visited { color: #6d93e4; }
+
+hr {
+    border: none;
+    border-top: 1px solid #afafaf;
+}
 
 /* "Jump to Table of Contents" link is shown to assistive tools, but hidden from
    sight until it's focused. */
@@ -49,56 +55,54 @@ a:hover { text-decoration: underline; }
 
 .jump:focus { left: 40%; }
 
-/* -- Paragraphs ------------------------------------------------------------ */
-p { margin: 1.3em 0; }
+/* -- Paragraphs and paragraph-like blocks ---------------------------------- */
+p,
+pre.code, pre.terminal, pre.cmd {
+    margin: 1.2em 0;
+}
+
 dd p, td p { margin-bottom: 0; }
 dd p:first-child, td p:first-child { margin-top: 0; }
 
 /* -- Headings -------------------------------------------------------------- */
 h1, h2, h3, h4, h5, h6 {
+    color: #eb8c28;/*was #f80*/
+    font-family: 'Maven Pro', Helvetica, sans-serif;
     font-weight: bold;
     line-height: 1.1;
-    margin: 1.5em 0 1em;
+    margin: 1.1em 0 0.5em;
 }
-
-h2, h3, h4, h5, h6 { color: #f80; }
 
 h1 {
-    font-family: Verdana, 'DejaVu Sans', 'Bitstream Vera Sans', Helvetica, sans-serif;
-    font-size: 261.538%; /* 34px */
-    margin: 25px 0 18px 25px;
-    -moz-text-shadow: 1px 1px 2px #999;
-    -webkit-text-shadow: 1px 1px 2px #999;
-    text-shadow: 1px 1px 2px #999;
+    font-size: 184.6%;
+    color: #30418C;
+    margin: 0.75em 0 0.5em;
+    padding: 0 16px 0 20px;
 }
 
-h2 {
-    font-size: 153.846%;
-    margin-top: 1.2em;
-}
+h2 { font-size: 153.846%; }
 
 h3 { font-size: 138.462%; }
 
 h4 {
-    border-bottom: 1px solid #d9d9d9;
-    color: #555;
+    border-bottom: 1px solid #DBDFEA;
     font-size: 115.385%;
     font-weight: normal;
-    text-transform: uppercase;
+    padding-bottom: 2px;
 }
 
 h5, h6 { font-size: 107.692%; }
 
 /* -- Code and examples ----------------------------------------------------- */
 code, kbd, pre, samp {
-    font-family: Menlo, 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Consolas', 'Inconsolata', 'Monaco', 'Courier New', fixed;
+    font-family: Menlo, Monaco, 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Consolas', 'Courier New', Courier, monospace;
     font-size: 92.308%;
     line-height: 1.35;
 }
 
 p code, p kbd, p samp {
-    background: #f6f6f6;
-    border: 1px solid #ededed;
+    background: #FCFBFA;
+    border: 1px solid #EFEEED;
     padding: 0 3px;
 }
 
@@ -112,19 +116,19 @@ table code, table kbd, table samp,
     padding: 0;
 }
 
-#doc pre.code, #doc pre.terminal {
+pre.code, pre.terminal, pre.cmd, #doc pre.prettyprint {
     overflow-x: auto;
-    *overflow-x: scroll;
     padding: 0.3em 0.6em;
+    _width: 99%;
 }
 
-#doc pre.code {
-    background: #f8f8f8;
-    border: 1px solid #ececec;
-    border-left: 5px solid #e2e2e2;
+pre.code, #doc pre.prettyprint {
+    background: #FCFBFA;
+    border: 1px solid #EFEEED;
+    border-left-width: 5px;
 }
 
-#doc pre.terminal {
+pre.terminal, pre.cmd {
     background: #F0EFFC;
     border: 1px solid #D0CBFB;
     border-left: 5px solid #D0CBFB;
@@ -144,6 +148,16 @@ pre code, pre kbd, pre samp { font-size: 100%; }
     user-select: none;
 }
 
+/* -- Lists ----------------------------------------------------------------- */
+dd { margin: 0.2em 0 0.7em 1em; }
+dl { margin: 1em 0; }
+dt { font-weight: bold; }
+
+/* -- Lists ----------------------------------------------------------------- */
+dd { margin: 0.2em 0 0.7em 1em; }
+dl { margin: 1em 0; }
+dt { font-weight: bold; }
+
 /* -- Tables ---------------------------------------------------------------- */
 caption, th { text-align: left; }
 
@@ -158,74 +172,87 @@ td, th {
     vertical-align: top;
 }
 
-td { background: #E5EDF1; }
+td { background: #E6E9F5; }
 td dl { margin: 0; }
 td dl dl { margin: 1em 0; }
 td pre:first-child { margin-top: 0; }
 
 th {
-    background: #6C8EA1;
-    color: #fff;
+    background: #D2D7E6;/*#97A0BF*/
+    border-bottom: none;
+    border-top: none;
+    color: #000;/*#FFF1D5*/
     font-weight: bold;
     line-height: 1.3;
-    text-transform: uppercase;
     white-space: nowrap;
 }
-
-/* -- Lists ----------------------------------------------------------------- */
-.spaced li { margin: 0.8em 0; }
-
-dd { margin: 0.2em 0 0.7em 1em; }
-dl { margin: 1em 0; }
-dt { font-weight: bold; }
 
 /* -- Layout and Content ---------------------------------------------------- */
 #doc {
     margin: auto;
-    width: 1024px;
+    max-width: 1200px;
+    min-width: 960px;
+    padding-bottom: 50px;
 }
 
-#main { width: 754px; }
+/*#main { width: 99%; }
 #sidebar { width: 270px; }
-
-.content { padding: 0 20px 0 25px; }
+*/
+.content { padding: 0 16px 0 20px; }
 
 /* -- Sidebar --------------------------------------------------------------- */
+.sidebar { padding: 0 15px 0 10px; }
+
 .sidebox {
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
-    -moz-box-shadow: 0 0 3px #afafaf;
-    -webkit-box-shadow: 0 0 3px #afafaf;
-    box-shadow: 0 0 3px #afafaf;
-    font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', 'Helvetica', 'Arial', sans-serif;
-    margin: 0 20px 15px 5px;
-    padding: 2px;
+    border: 1px solid #D4D8EB;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    -moz-box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    -webkit-box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    margin: 0 0 15px 0;
+    padding-bottom: 1px;
 }
 
-.sidebox h2 {
-    background: #efefef;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
-    color: #333;
+.sidebox .hd {
+    background: #E5E6F1;
+    -moz-border-radius: 3px 3px 0 0;
+    -webkit-border-radius: 3px 3px 0 0;
+    border-radius: 3px 3px 0 0;
+    padding: 4px 7px 5px;
+}
+
+.sidebox .bd {
+    background: #F9F9FC;
+    -moz-border-radius: 0 0 3px 3px;
+    -webkit-border-radius: 0 0 3px 3px;
+    border-radius: 0 0 3px 3px;
+    font-size: 11px;
+    padding: 10px 8px 10px;
+}
+
+.sidebox .hd h2 {
+    color: #30418c;
+    font-weight: bold;
     font-size: 107.692%;
     margin: 0;
-    padding: 2px 6px 3px;
 }
 
-.sidebox .bd { font-size: 84.615%; }
-.sidebox li { list-style-type: square; }
+.sidebox li {
+    color: #D4D5E3;
+    list-style-type: disc;
+}
 
 .sidebox ol, .sidebox ul {
-    margin-left: 0;
-    padding-left: 24px;
+    margin: 0;
+    padding-left: 14px;
 }
 
 .sidebox ol ol, .sidebox ol ul,
 .sidebox ul ol, .sidebox ul ul {
     margin: 0;
-    padding-left: 16px;
+    padding-left: 14px;
 }
 
 /* -- Table of Contents ----------------------------------------------------- */
@@ -248,12 +275,16 @@ dt { font-weight: bold; }
     -webkit-box-shadow: 0 0 5px #bfbfbf;
     box-shadow: 0 0 5px #bfbfbf;
     padding: 1em;
+    border: 1px solid #dfdfdf\9; /* IE6-8 only */
 }
 
 .intro {
-    background: #E2EEFB;
-    border: 1px solid #BDD6F4;
-    padding: 0em 1em;
+    background: #F0F1F8;/*E6E9F5*/
+    border: 1px solid #D4D8EB;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    padding: 0 1em;
 }
 
 /* -- Other Styles ---------------------------------------------------------- */
@@ -261,17 +292,26 @@ dt { font-weight: bold; }
 /* These are probably YUI-specific, and should be moved out of Selleck's default
    theme. */
 
+/* Pretty buttons. */
+.button,
+.button:visited {
+    color: #444;
+}
+
 .button {
-    border: 1px solid #dadada;
+    border: 1px solid #e9e9e9;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
-    color: #444;
+    -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     display: inline-block;
     font-family: Helvetica, Arial, sans-serif;
-    font-size: 92.308%;
+    font-size: 13px;
     font-weight: bold;
     padding: 4px 13px 3px;
+    text-align: center;
     -moz-text-shadow: 1px 1px 0 #fff;
     -webkit-text-shadow: 1px 1px 0 #fff;
     text-shadow: 1px 1px 0 #fff;
@@ -281,10 +321,15 @@ dt { font-weight: bold; }
     background: -moz-linear-gradient(top, #f5f5f5 0%, #efefef 50%, #e5e5e5 51%, #dfdfdf 100%); /* firefox */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f5f5f5), color-stop(50%,#efefef), color-stop(51%,#e5e5e5), color-stop(100%,#dfdfdf)); /* webkit */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5f5f5', endColorstr='#dfdfdf',GradientType=0 ); /* ie */
+    *border-color: #dadada;
+    *padding-bottom: 5px;
 }
 
 .button:hover {
     border-color: #466899;
+    -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
     color: #fff;
     text-decoration: none;
     -moz-text-shadow: 1px 1px 0 #222;
@@ -297,4 +342,15 @@ dt { font-weight: bold; }
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6396D8', endColorstr='#466899',GradientType=0 ); /* ie */
 }
 
+/* Big download button, like on the Home page. */
+.button.download {
+    display: block;
+    font-size: 18px;
+    margin: 0 0 1em;
+    padding: 9px 17px 8px;
+}
+
 .newwindow { text-align: center; }
+
+/* List with extra vertical spacing between items. */
+.spaced li { margin: 0.8em 0; }

@@ -9,6 +9,8 @@ Selleck History
 * Now using graceful-fs to avoid EMFILE errors due to too many open file
   handles when generating lots of docs.
 
+* Default theme now looks a lot more like yuilibrary.com.
+
 
 0.1.6 (2011-09-27)
 ------------------

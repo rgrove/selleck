@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>{{htmlTitle}}</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Maven+Pro:400,700">
     <link rel="stylesheet" href="{{yuiGridsUrl}}">
     <link rel="stylesheet" href="{{projectAssets}}/css/main.css">
     <link rel="stylesheet" href="{{projectAssets}}/vendor/prettify/prettify-min.css">
@@ -18,62 +19,66 @@
     {{/hideTableOfContents}}
 
     <div class="yui3-g">
-        <div id="main" class="yui3-u">
-            <div class="content">{{>layout_content}}</div>
+        <div class="yui3-u-3-4">
+            <div id="main">
+                <div class="content">{{>layout_content}}</div>
+            </div>
         </div>
 
-        <div id="sidebar" class="yui3-u">
-            {{^hideTableOfContents}}
-                <div id="toc" class="sidebox">
-                    <div class="hd">
-                        <h2 class="no-toc">Table of Contents</h2>
-                    </div>
+        <div class="yui3-u-1-4">
+            <div class="sidebar">
+                {{^hideTableOfContents}}
+                    <div id="toc" class="sidebox">
+                        <div class="hd">
+                            <h2 class="no-toc">Table of Contents</h2>
+                        </div>
 
-                    <div class="bd">
-                        {{toc}}
+                        <div class="bd">
+                            {{toc}}
+                        </div>
                     </div>
-                </div>
-            {{/hideTableOfContents}}
+                {{/hideTableOfContents}}
 
-            {{#if hasOwnExamples}}
-                <div class="sidebox">
-                    <div class="hd">
-                        <h2 class="no-toc">Examples</h2>
-                    </div>
+                {{#if hasOwnExamples}}
+                    <div class="sidebox">
+                        <div class="hd">
+                            <h2 class="no-toc">Examples</h2>
+                        </div>
 
-                    <div class="bd">
-                        <ul class="examples">
-                            {{#examples}}
-                                {{#unless inherited}}
-                                    <li data-description="{{description}}">
-                                        <a href="{{name}}.html">{{displayName}}</a>
-                                    </li>
-                                {{/unless}}
-                            {{/examples}}
-                        </ul>
+                        <div class="bd">
+                            <ul class="examples">
+                                {{#examples}}
+                                    {{#unless inherited}}
+                                        <li data-description="{{description}}">
+                                            <a href="{{name}}.html">{{displayName}}</a>
+                                        </li>
+                                    {{/unless}}
+                                {{/examples}}
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            {{/if}}
+                {{/if}}
 
-            {{#if hasInheritedExamples}}
-                <div class="sidebox">
-                    <div class="hd">
-                        <h2 class="no-toc">Examples That Use This Component</h2>
-                    </div>
+                {{#if hasInheritedExamples}}
+                    <div class="sidebox">
+                        <div class="hd">
+                            <h2 class="no-toc">Examples That Use This Component</h2>
+                        </div>
 
-                    <div class="bd">
-                        <ul class="examples">
-                            {{#examples}}
-                                {{#if inherited}}
-                                    <li data-description="{{description}}">
-                                        <a href="../{{componentName}}/{{name}}.html">{{displayName}}</a>
-                                    </li>
-                                {{/if}}
-                            {{/examples}}
-                        </ul>
+                        <div class="bd">
+                            <ul class="examples">
+                                {{#examples}}
+                                    {{#if inherited}}
+                                        <li data-description="{{description}}">
+                                            <a href="../{{componentName}}/{{name}}.html">{{displayName}}</a>
+                                        </li>
+                                    {{/if}}
+                                {{/examples}}
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            {{/if}}
+                {{/if}}
+            </div>
         </div>
     </div>
 </div>
