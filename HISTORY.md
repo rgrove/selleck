@@ -6,6 +6,9 @@ Selleck History
 
 * Node 0.5.x/0.6.x compatibility.
 
+* Now using graceful-fs to avoid EMFILE errors due to too many open file
+  handles when generating lots of docs.
+
 
 0.1.6 (2011-09-27)
 ------------------
