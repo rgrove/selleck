@@ -2,7 +2,7 @@
     "name"       : "selleck",
     "description": "Generator for YUI's Handlebars-based user documentation.",
 
-    "version"    : "0.1.6",
+    "version"    : "0.1.7-git",
     "homepage"   : "https://github.com/rgrove/selleck/",
     "author"     : "Ryan Grove <ryan@wonko.com> (http://wonko.com/)",
     "copyright"  : "Copyright (c) 2011 Yahoo! Inc. All rights reserved.",
@@ -10,20 +10,21 @@
     "keywords"   : ["yui", "handlebars", "mustache", "docs", "documentation"],
 
     "licenses": [
-        {"type": "BSD", "url": "http://developer.yahoo.com/yui/license.html"}
+        {"type": "BSD", "url": "http://yuilibrary.com/license/"}
     ],
 
-    "repository": [
-        {"type": "git", "url": "git://github.com/rgrove/selleck.git"}
-    ],
+    "repository": {
+        "type": "git",
+        "url" : "git://github.com/rgrove/selleck.git"
+    },
 
     "engines": [
-        "node ~0.4.0",
-        "npm >=0.3.1 <1.1.0"
+        "node 0.4 || 0.5 || 0.6",
+        "npm ~1.0.0"
     ],
 
     "dependencies": {
-        "express" : ">=2.3.0 <2.5.0"
+        "express"    : ">=2.3.0 <2.6.0",
     },
 
     "main": "index",

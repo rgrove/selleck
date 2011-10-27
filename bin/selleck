@@ -95,11 +95,7 @@ while ((arg = argv.shift())) {
 
     case '--help':
     case '-h':
-        // WTF. This is seriously the only way I've been able to figure out to
-        // make Node reliably flush to stdout before exiting. It's ridiculous.
-        // This is stupid.
         process.stdout.write(help);
-        while (!process.stdout.flush()) {};
         process.exit();
         break;
 
@@ -175,9 +171,7 @@ while ((arg = argv.shift())) {
             ""
         ].join('\n');
 
-        // See rant above re. forcing Node to flush stdout before exiting.
         process.stdout.write(version);
-        while (!process.stdout.flush()) {};
         process.exit();
         break;
 
