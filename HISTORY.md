@@ -1,6 +1,14 @@
 Selleck History
 ===============
 
+0.1.8 (git)
+-----------
+
+* Literal Mustache/Handlebars delimiters can now be output in generated docs by
+  escaping them with a backslash: `\{{foo\}}` will output the literal string
+  "{{foo}}".
+
+
 0.1.7 (2011-10-27)
 ------------------
 

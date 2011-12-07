@@ -3,10 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>Selleck User Guide</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.4.0pr3/build/cssgrids/grids-min.css">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Maven+Pro:400,700">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.4.1/build/cssgrids/grids-min.css">
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/vendor/prettify/prettify-min.css">
-    <script src="http://yui.yahooapis.com/3.4.0pr3/build/yui/yui-min.js"></script>
+    <script src="http://yui.yahooapis.com/3.4.1/build/yui/yui-min.js"></script>
 </head>
 <body>
 
@@ -18,8 +19,9 @@
     
 
     <div class="yui3-g">
-        <div id="main" class="yui3-u">
-            <div class="content"><div class="intro">
+        <div class="yui3-u-3-4">
+            <div id="main">
+                <div class="content"><div class="intro">
 <p>
 Selleck is a tool for generating user documentation from <a href="http://mustache.github.com/">Mustache</a>-based templates. It was created to generate documentation for the YUI Library. At the moment this document and Selleck itself are pretty YUI-specific, but over time Selleck will become a more generic tool, and the YUI-specific parts of the workflow (and this document) will be broken out.
 </p>
@@ -91,7 +93,7 @@ Components will automatically inherit any available partials and layouts from th
 <h4 id="metadata">Metadata</h4>
 
 <p>
-Projects and components have <strong>metadata</strong> files (<samp>project.json</samp> for projects, <samp>component.json</samp> for components) containing data that will be made available to page templates. 
+Projects and components have <strong>metadata</strong> files (<samp>project.json</samp> for projects, <samp>component.json</samp> for components) containing data that will be made available to page templates.
 
 <p>
 Project metadata files must contain a <code>projectName</code> property, and component metadata files must contain a <code>name</code> property; otherwise, the contents of these files are freeform. You can use these files to provide data to your templates, which you can then refer to using Mustache tags like <code>&#123;{projectName}}</code>.
@@ -294,6 +296,19 @@ YUI().use(&#x27;node&#x27;, function (Y) {
     </tr>
 
     <tr>
+    <td>Literal delimiters</td>
+    <td>
+<pre class="">\{{foo\}}</pre>
+
+    </td>
+    <td>
+        <p>
+        Escape a Mustache left or right delimiter with a <code>\</code> to tell Selleck it should output the delimiter characters as is rather than treating them as Mustache delimiters. This is particularly useful when writing documentation about Mustache in Mustache!
+        </p>
+    </td>
+    </tr>
+
+    <tr>
     <td>Preformatted block (no highlighting)</td>
     <td>
 <pre class="">`&#x60;&#x60;nohighlight
@@ -421,17 +436,19 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </p>
 </div>
+            </div>
         </div>
 
-        <div id="sidebar" class="yui3-u">
-            
-                <div id="toc" class="sidebox">
-                    <div class="hd">
-                        <h2 class="no-toc">Table of Contents</h2>
-                    </div>
+        <div class="yui3-u-1-4">
+            <div class="sidebar">
+                
+                    <div id="toc" class="sidebox">
+                        <div class="hd">
+                            <h2 class="no-toc">Table of Contents</h2>
+                        </div>
 
-                    <div class="bd">
-                        <ul class="toc">
+                        <div class="bd">
+                            <ul class="toc">
 <li>
 <a href="#requirements">Requirements</a>
 </li>
@@ -487,13 +504,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <a href="#license">License</a>
 </li>
 </ul>
+                        </div>
                     </div>
-                </div>
-            
+                
 
-            
+                
 
-            
+                
+            </div>
         </div>
     </div>
 </div>

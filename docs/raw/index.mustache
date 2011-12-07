@@ -72,7 +72,7 @@ Components will automatically inherit any available partials and layouts from th
 <h4>Metadata</h4>
 
 <p>
-Projects and components have <strong>metadata</strong> files (<samp>project.json</samp> for projects, <samp>component.json</samp> for components) containing data that will be made available to page templates. 
+Projects and components have <strong>metadata</strong> files (<samp>project.json</samp> for projects, <samp>component.json</samp> for components) containing data that will be made available to page templates.
 
 <p>
 Project metadata files must contain a `projectName` property, and component metadata files must contain a `name` property; otherwise, the contents of these files are freeform. You can use these files to provide data to your templates, which you can then refer to using Mustache tags like <code>&#123;{projectName}}</code>.
@@ -276,6 +276,20 @@ In addition to Mustache templating tags, Selleck provides some markup syntax of 
 
         <p>
         By default, the heading name is used as the link text. If optional custom link text is provided, that will be used instead.
+        </p>
+    </td>
+    </tr>
+
+    <tr>
+    <td>Literal delimiters</td>
+    <td>
+        ```nohighlight
+        \\{{foo\\}}
+        ```
+    </td>
+    <td>
+        <p>
+        Escape a Mustache left or right delimiter with a <code>\</code> to tell Selleck it should output the delimiter characters as is rather than treating them as Mustache delimiters. This is particularly useful when writing documentation about Mustache in Mustache!
         </p>
     </td>
     </tr>
