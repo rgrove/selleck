@@ -1,6 +1,13 @@
 Selleck History
 ===============
 
+0.1.9 (2011-12-12)
+------------------
+
+* Fixed a bug in the delimiter-escaping change that caused an exception on
+  empty templates.
+
+
 0.1.8 (2011-12-12)
 ------------------
 
