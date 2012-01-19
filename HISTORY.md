@@ -1,6 +1,12 @@
 Selleck History
 ===============
 
+0.1.10 (2012-01-19)
+-------------------
+
+* Sub-pages of component pages may now contain their own examples. [Dav Glass]
+
+
 0.1.9 (2011-12-12)
 ------------------
 

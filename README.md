@@ -17,7 +17,7 @@ AutoComplete docs and examples, generated using Selleck.
 License
 -------
 
-Copyright (c) 2011 Yahoo! Inc.
+Copyright (c) 2012 Yahoo! Inc.
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms, with or
