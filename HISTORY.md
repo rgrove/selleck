@@ -1,6 +1,19 @@
 Selleck History
 ===============
 
+0.1.11 (2012-03-01)
+-------------------
+
+* You can now explicitly specify a language name (like "js" or "handlebars")
+  after the opening triple-backticks of a code block to force Prettify to
+  treat the block as that language rather than relying on auto-detection.
+
+* Add Handlebars+HTML highlighting support to the version of Prettify
+  distributed with Selleck. Prettify can't auto-detect Handlebars, so you need
+  to explicitly specify "handlebars" after the opening triple-backticks of a
+  code block to enable it.
+
+
 0.1.10 (2012-01-19)
 -------------------
 

@@ -39,14 +39,14 @@ Selleck requires <a href="http://nodejs.org/">Node.js</a> 0.4.0 or greater. It a
 Install Selleck using npm:
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>npm install selleck -g</pre>
+<pre class="code terminal"><span class="noselect">$ </span>npm install selleck -g</pre>
 
 
 <p>
 Or clone the <a href="https://github.com/rgrove/selleck/">GitHub repo</a> to install the latest development version:
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>git clone git:&#x2F;&#x2F;github.com&#x2F;rgrove&#x2F;selleck.git
+<pre class="code terminal"><span class="noselect">$ </span>git clone git:&#x2F;&#x2F;github.com&#x2F;rgrove&#x2F;selleck.git
 <span class="noselect">$ </span>cd selleck &amp;&amp; npm install -g</pre>
 
 
@@ -246,7 +246,7 @@ In addition to Mustache templating tags, Selleck provides some markup syntax of 
     <tr>
     <td>Code block</td>
     <td>
-<pre class="">`&#x60;&#x60;
+<pre class="code">`&#x60;&#x60;
 YUI().use(&#x27;node&#x27;, function (Y) {
   &#x2F;&#x2F; Sample code
 });
@@ -261,13 +261,17 @@ YUI().use(&#x27;node&#x27;, function (Y) {
         <p>
         The wrapped text is automatically unindented to match the indentation level of the first line, so you're free to indent the containing block itself however you want.
         </p>
+
+        <p>
+        You may optionally explicitly specify a language to use for the syntax highlighting immediately after the opening triple-backticks. For example: <code>```handlebars</code>
+        </p>
     </td>
     </tr>
 
     <tr>
     <td>Code (inline)</td>
     <td>
-<pre class="">&#x60;&lt;code&gt;&#x60;</pre>
+<pre class="code">&#x60;&lt;code&gt;&#x60;</pre>
 
     </td>
     <td>
@@ -280,7 +284,7 @@ YUI().use(&#x27;node&#x27;, function (Y) {
     <tr>
     <td>Link (internal)</td>
     <td>
-<pre class="">[[#Heading Name]]
+<pre class="code">[[#Heading Name]]
 [[#Heading Name|Optional Link Text]]</pre>
 
     </td>
@@ -298,7 +302,7 @@ YUI().use(&#x27;node&#x27;, function (Y) {
     <tr>
     <td>Literal delimiters</td>
     <td>
-<pre class="">\{{foo\}}</pre>
+<pre class="code">\{{foo\}}</pre>
 
     </td>
     <td>
@@ -311,7 +315,7 @@ YUI().use(&#x27;node&#x27;, function (Y) {
     <tr>
     <td>Preformatted block (no highlighting)</td>
     <td>
-<pre class="">`&#x60;&#x60;nohighlight
+<pre class="code">`&#x60;&#x60;nohighlight
 This is just a normal preformatted
 text block with no highlighting.
 `&#x60;&#x60;</pre>
@@ -327,7 +331,7 @@ text block with no highlighting.
     <tr>
     <td>Terminal block</td>
     <td>
-<pre class="">`&#x60;&#x60;terminal
+<pre class="code">`&#x60;&#x60;terminal
 $ sudo -i
 # rm -rf &#x2F;
 `&#x60;&#x60;</pre>
@@ -354,7 +358,7 @@ After installation, you'll have a new command line application named <kbd>sellec
 If no options are given, Selleck will search the current directory and all its subdirectories recursively, looking for documentation directories (it does this by searching for <samp>project.json</samp> and <samp>component.json</samp> files). It will generate HTML documentation from all the doc directories it finds, and will write the generated docs to <samp>./docs</samp> by default.
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>cd ~&#x2F;src&#x2F;yui&#x2F;yui3
+<pre class="code terminal"><span class="noselect">$ </span>cd ~&#x2F;src&#x2F;yui&#x2F;yui3
 <span class="noselect">$ </span>selleck
 [info] Generating project docs for &#x2F;Users&#x2F;rgrove&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;src&#x2F;common&#x2F;docs
 [info] Generating component docs for &#x2F;Users&#x2F;rgrove&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;src&#x2F;autocomplete&#x2F;docs
@@ -366,35 +370,35 @@ If no options are given, Selleck will search the current directory and all its s
 To generate documentation from a directory other than the current directory, pass the directory as an argument.
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3</pre>
+<pre class="code terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3</pre>
 
 
 <p>
 You may also optionally specify an output directory for the generated docs.
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --out ~&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;docs</pre>
+<pre class="code terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --out ~&#x2F;src&#x2F;yui&#x2F;yui3&#x2F;docs</pre>
 
 
 <p>
 To specify a documentation theme other than Selleck's default theme, use the <kbd>--theme</kbd> option/
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --theme &#x2F;path&#x2F;to&#x2F;theme</pre>
+<pre class="code terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --theme &#x2F;path&#x2F;to&#x2F;theme</pre>
 
 
 <p>
 To generate documentation for an explicit project rather than searching for the project, use the <samp>--project</samp> option.
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>selleck --project &#x2F;path&#x2F;to&#x2F;project</pre>
+<pre class="code terminal"><span class="noselect">$ </span>selleck --project &#x2F;path&#x2F;to&#x2F;project</pre>
 
 
 <p>
 Finally, the <samp>--server</samp> option will start a web server that you can use to preview your documentation in real time as you make changes, so that you don't need to regenerate after every change. It can be used in combination with any of the other options.
 </p>
 
-<pre class="terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --server
+<pre class="code terminal"><span class="noselect">$ </span>selleck ~&#x2F;src&#x2F;yui&#x2F;yui3 --server
 [info] Selleck is now giving Ferrari rides at http:&#x2F;&#x2F;localhost:3000</pre>
 
 
