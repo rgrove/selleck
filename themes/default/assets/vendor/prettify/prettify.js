@@ -1523,7 +1523,7 @@ PR['registerLangHandler'](
       [PR['PR_DECLARATION'], /^{{{>?\s*[\w.][^}]*}}}/],
 
       // Comment.
-      [PR['PR_COMMENT'], /^{{![^}]*}}/],
+      [PR['PR_COMMENT'], /^{{![^}]*}}/]
     ]),
 ['handlebars', 'hbs']);
 

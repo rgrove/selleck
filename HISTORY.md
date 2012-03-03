@@ -1,6 +1,12 @@
 Selleck History
 ===============
 
+0.1.12 (2012-03-02)
+-------------------
+
+* Fixed a trailing comma in the Prettify JS.
+
+
 0.1.11 (2012-03-01)
 -------------------
 
