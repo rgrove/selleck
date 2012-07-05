@@ -4,6 +4,8 @@ Selleck History
 0.1.13 (2012-04-19)
 -------------------
 
+* Node 0.8.x compatibility.
+
 * Added custom header and footer partials for easier theme overrides. [Dav
   Glass]
 

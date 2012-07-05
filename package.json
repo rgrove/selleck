@@ -2,7 +2,7 @@
     "name"       : "selleck",
     "description": "Generator for YUI's Handlebars-based user documentation.",
 
-    "version"    : "0.1.12",
+    "version"    : "0.1.13",
     "homepage"   : "https://github.com/rgrove/selleck/",
     "author"     : "Ryan Grove <ryan@wonko.com> (http://wonko.com/)",
     "copyright"  : "Copyright (c) 2012 Yahoo! Inc. All rights reserved.",
@@ -19,7 +19,7 @@
     },
 
     "engines": [
-        "node 0.4 || 0.5 || 0.6",
+        "node >=0.4",
         "npm >=1.0.0"
     ],
 
