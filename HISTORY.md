@@ -1,6 +1,13 @@
 Selleck History
 ===============
 
+0.1.13 (2012-04-19)
+-------------------
+
+* Added custom header and footer partials for easier theme overrides. [Dav
+  Glass]
+
+
 0.1.12 (2012-03-02)
 -------------------
 
