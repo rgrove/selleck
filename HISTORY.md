@@ -1,6 +1,13 @@
 Selleck History
 ===============
 
+0.1.14 (2012-08-14)
+-------------------
+
+* Fixed a bug in which examples weren't properly cross-linked in server mode.
+  [Dav Glass]
+
+
 0.1.13 (2012-04-19)
 -------------------
 
