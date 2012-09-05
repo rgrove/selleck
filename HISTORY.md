@@ -1,6 +1,12 @@
 Selleck History
 ===============
 
+0.1.15 (2012-09-04)
+-------------------
+
+* Log errors to stderr instead of stdout. [Evan Goer]
+
+
 0.1.14 (2012-08-14)
 -------------------
 
